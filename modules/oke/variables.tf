@@ -2,427 +2,9 @@ variable "tenancy_ocid" {}
 
 variable "compartment_id" {}
 
-variable "vcn_cidr_blocks" {
-  type = list(string)
-}
-
 variable "vcn_name" {
   type    = string
   default = "acme-dev-vcn"
-}
-
-variable "internet_gateway_enabled" {
-  type    = bool
-  default = true
-}
-
-variable "internet_gateway_name" {
-  type    = string
-  default = "internet-gateway-0"
-}
-
-variable "nat_gateway_name" {
-  type    = string
-  default = "nat-gateway-0"
-}
-
-variable "service_gateway_name" {
-  type    = string
-  default = "service-gateway-0"
-}
-
-variable "dhcp_options_name" {
-  type    = string
-  default = "dhcp-options-0"
-}
-
-variable "dhcp_options_type" {
-  type    = string
-  default = "DomainNameServer"
-}
-
-variable "dhcp_options_server_type" {
-  type    = string
-  default = "VcnLocalPlusInternet"
-}
-
-variable "security_lists" {
-  type = map(object({
-    egress_security_rules = optional(set(object({
-      protocol         = string
-      destination      = string
-      destination_type = optional(string)
-      description      = optional(string)
-      stateless        = optional(bool, false)
-
-      icmp_options = optional(object({
-        type = number
-        code = optional(number)
-      }))
-
-      tcp_options = optional(object({
-        max = number
-        min = number
-      }))
-
-      udp_options = optional(object({
-        max = number
-        min = number
-      }))
-    })))
-
-    ingress_security_rules = optional(set(object({
-      protocol    = string
-      source      = string
-      source_type = optional(string)
-      description = optional(string)
-      stateless   = optional(bool, false)
-
-      icmp_options = optional(object({
-        type = number
-        code = optional(number)
-      }))
-
-      tcp_options = optional(object({
-        max = number
-        min = number
-      }))
-
-      udp_options = optional(object({
-        max = number
-        min = number
-      }))
-    })))
-  }))
-
-  default = {
-    "seclist-KubernetesAPIendpoint" = {
-      ingress_security_rules = [
-        {
-          protocol    = "6"
-          source      = "10.0.1.0/24"
-          description = "Kubernetes worker to Kubernetes API endpoint communication."
-          source_type = "CIDR_BLOCK"
-          tcp_options = {
-            min = 6443
-            max = 6443
-          }
-        },
-        {
-          protocol    = "6"
-          source      = "10.0.1.0/24"
-          description = "Kubernetes worker to control plane communication."
-          source_type = "CIDR_BLOCK"
-          tcp_options = {
-            min = 12250
-            max = 12250
-          }
-        },
-        {
-          protocol    = "1"
-          source      = "10.0.1.0/24"
-          description = "	Path Discovery."
-          source_type = "CIDR_BLOCK"
-          icmp_options = {
-            type = 3
-            code = 4
-          }
-        },
-        {
-          protocol    = "6"
-          source      = "10.0.3.0/24"
-          description = "Bastion subnet CIDR when access is made through OCI Bastion"
-          source_type = "CIDR_BLOCK"
-          tcp_options = {
-            min = 6443
-            max = 6443
-          }
-        }
-      ]
-      egress_security_rules = [
-        {
-          protocol         = "6"
-          destination      = "ci-phx-objectstorage"
-          description      = "Allow Kubernetes control plane to communicate with OKE."
-          destination_type = "SERVICE_CIDR_BLOCK"
-          stateless        = false
-        },
-        {
-          protocol         = "1"
-          destination      = "ci-phx-objectstorage"
-          description      = "Path Discovery."
-          destination_type = "SERVICE_CIDR_BLOCK"
-          stateless        = false
-          icmp_options = {
-            type = 3
-            code = 4
-          }
-        },
-        {
-          protocol         = "6"
-          destination      = "10.0.1.0/24"
-          description      = "Allow Kubernetes control plane to communicate with worker nodes."
-          destination_type = "CIDR_BLOCK"
-          stateless        = false
-        },
-        {
-          protocol         = "1"
-          destination      = "10.0.1.0/24"
-          description      = "Path Discovery."
-          destination_type = "CIDR_BLOCK"
-          stateless        = false
-          icmp_options = {
-            type = 3
-            code = 4
-          }
-        }
-      ]
-    }
-    seclist-workernodes = {
-      egress_security_rules = [
-        {
-          protocol         = "all"
-          destination      = "10.0.1.0/24"
-          description      = "Allow pods on one worker node to communicate with pods on other worker nodes."
-          destination_type = "CIDR_BLOCK"
-          stateless        = false
-        },
-        {
-          protocol         = "6"
-          destination      = "ci-phx-objectstorage"
-          description      = "Allow load balancer to communicate with kube-proxy on worker nodes."
-          destination_type = "SERVICE_CIDR_BLOCK"
-          stateless        = false
-        },
-        {
-          protocol         = "6"
-          destination      = "10.0.0.0/30"
-          description      = "Kubernetes worker to Kubernetes API endpoint communication."
-          destination_type = "CIDR_BLOCK"
-          stateless        = false
-          tcp_options = {
-            min = 6443
-            max = 6443
-          }
-        },
-        {
-          protocol         = "6"
-          destination      = "10.0.0.0/30"
-          description      = "Kubernetes worker to control plane communication."
-          destination_type = "CIDR_BLOCK"
-          stateless        = false
-          tcp_options = {
-            min = 12250
-            max = 12250
-          }
-        },
-        {
-          protocol         = "6"
-          destination      = "0.0.0.0/0"
-          description      = "Allow worker nodes to communicate with internet."
-          destination_type = "CIDR_BLOCK"
-          stateless        = false
-        }
-      ]
-      ingress_security_rules = [
-        {
-          protocol    = "all"
-          source      = "10.0.1.0/24 "
-          description = "Allow pods on one worker node to communicate with pods on other worker nodes."
-          source_type = "CIDR_BLOCK"
-        },
-        {
-          protocol    = "6"
-          source      = "10.0.0.0/30"
-          description = "Allow Kubernetes control plane to communicate with worker nodes."
-          source_type = "CIDR_BLOCK"
-        },
-        {
-          protocol    = "1"
-          source      = "0.0.0.0/0"
-          description = "Path Discovery."
-          source_type = "CIDR_BLOCK"
-          icmp_options = {
-            type = 3
-            code = 4
-          }
-        },
-        {
-          protocol    = "6"
-          source      = "10.0.3.0/24"
-          description = "Allow inbound SSH traffic to managed nodes."
-          source_type = "CIDR_BLOCK"
-          tcp_options = {
-            min = 22
-            max = 22
-          }
-        },
-        {
-          protocol    = "all"
-          source      = "10.0.2.0/24"
-          description = "Load balancer to worker nodes node ports."
-          source_type = "CIDR_BLOCK"
-          tcp_options = {
-            min = 30000
-            max = 32767
-          }
-        },
-        {
-          protocol    = "all"
-          source      = "10.0.2.0/24"
-          description = "Allow load balancer to communicate with kube-proxy on worker nodes."
-          source_type = "CIDR_BLOCK"
-          tcp_options = {
-            min = 10256
-            max = 10256
-          }
-        }
-      ]
-    }
-    seclist-loadbalancers = {
-      egress_security_rules = [
-        {
-          protocol         = "all"
-          destination      = "10.0.1.0/24"
-          description      = "Load balancer to worker nodes node ports."
-          destination_type = "CIDR_BLOCK"
-          tcp_options = {
-            min = 30000
-            max = 32767
-          }
-        },
-        {
-          protocol         = "all"
-          destination      = "10.0.1.0/24"
-          description      = "Allow load balancer to communicate with kube-proxy on worker nodes."
-          destination_type = "CIDR_BLOCK"
-          tcp_options = {
-            min = 10256
-            max = 10256
-          }
-        }
-      ]
-      ingress_security_rules = [
-        {
-          protocol    = "6"
-          source      = "0.0.0.0/0"
-          description = "Allow HTTP traffic from internet."
-          source_type = "CIDR_BLOCK"
-          tcp_options = {
-            min = 443
-            max = 443
-          }
-        }
-      ]
-    }
-    seclist-Bastion = {
-      egress_security_rules = [
-        {
-          protocol         = "6"
-          destination      = "10.0.0.0/30"
-          description      = "Load balancer to worker nodes node ports."
-          destination_type = "CIDR_BLOCK"
-          tcp_options = {
-            min = 30000
-            max = 32767
-          }
-        },
-        {
-          protocol         = "6"
-          destination      = "10.0.1.0/24"
-          description      = "Allow SSH traffic to worker nodes."
-          destination_type = "CIDR_BLOCK"
-          tcp_options = {
-            min = 22
-            max = 22
-          }
-        }
-      ]
-      ingress_security_rules = []
-    }
-  }
-}
-
-variable "route_tables" {
-  type = map(set(object({
-    network_entity_id = string
-    description       = optional(string)
-    destination       = optional(string)
-    destination_type  = optional(string)
-  })))
-  default = {
-    "routetable-KubernetesAPIendpoint" = [
-      {
-        network_entity_id = "natgw"
-        destination       = "0.0.0.0/0"
-        destination_type  = "CIDR_BLOCK"
-        description       = "Rule for traffic to internet"
-      },
-      {
-        network_entity_id = "svcgw"
-        destination       = "ci-phx-objectstorage"
-        destination_type  = "SERVICE_CIDR_BLOCK"
-        description       = "Rule for traffic to OCI services"
-      }
-    ],
-    "routetable-workernodes" = [
-      {
-        network_entity_id = "natgw"
-        destination       = "0.0.0.0/0"
-        destination_type  = "CIDR_BLOCK"
-        description       = "Rule for traffic to internet"
-      },
-      {
-        network_entity_id = "svcgw"
-        destination       = "ci-phx-objectstorage"
-        destination_type  = "SERVICE_CIDR_BLOCK"
-        description       = "Rule for traffic to OCI services"
-      }
-    ],
-    "routetable-loadbalancers" = [
-      {
-        network_entity_id = "intgw"
-        destination       = "0.0.0.0/0"
-        destination_type  = "CIDR_BLOCK"
-        description       = "Rule for traffic to internet"
-      }
-    ]
-  }
-}
-
-variable "subnets" {
-  type = map(object({
-    cidr_block                = string
-    dhcp_options_id           = optional(string)
-    prohibit_internet_ingress = optional(bool, false)
-    route_table_id            = optional(string)
-    security_list_ids         = optional(list(string))
-  }))
-  default = {
-    "KubernetesAPIendpoint" = {
-      cidr_block                = "10.0.0.0/30"
-      prohibit_internet_ingress = true
-      route_table_id            = "routetable-KubernetesAPIendpoint"
-      security_list_ids         = ["seclist-KubernetesAPIendpoint"]
-    },
-    "workernodes" = {
-      cidr_block                = "10.0.1.0/24"
-      prohibit_internet_ingress = true
-      route_table_id            = "routetable-KubernetesAPIendpoint"
-      security_list_ids         = ["seclist-KubernetesAPIendpoint"]
-    },
-    "loadbalancers" = {
-      cidr_block        = "10.0.2.0/24"
-      route_table_id    = "routetable-KubernetesAPIendpoint"
-      security_list_ids = ["seclist-KubernetesAPIendpoint"]
-    },
-    "bastion" = {
-      cidr_block                = "10.0.3.0/24"
-      prohibit_internet_ingress = true
-      route_table_id            = "routetable-KubernetesAPIendpoint"
-      security_list_ids         = ["seclist-KubernetesAPIendpoint"]
-    }
-  }
 }
 
 variable "cluster_name" {
@@ -432,7 +14,7 @@ variable "cluster_name" {
 
 variable "cluster_type" {
   type    = string
-  default = "BASIC_CLUSTER"
+  default = "ENHANCED_CLUSTER"
 }
 
 variable "kubernetes_version" {
@@ -440,9 +22,43 @@ variable "kubernetes_version" {
   default = "v1.34.1"
 }
 
-variable "pods_cidr" {
+variable "cluster_subnet_name" {
   type    = string
-  default = "10.244.0.0/16"
+  default = "controlplane"
+}
+
+variable "endpoint_nsg_ids" {
+  type     = set(string)
+  nullable = true
+  default  = null
+}
+
+variable "cni_types" {
+  type = set(string)
+  default = [
+    "FLANNEL",
+    "OCI_VCN_IP_NATIVE"
+  ]
+}
+
+variable "is_public_endpoint_enabled" {
+  type    = bool
+  default = false
+}
+
+variable "is_pod_security_policy_enabled" {
+  type    = bool
+  default = false
+}
+
+variable "loadbalancer_subnet_name" {
+  type    = string
+  default = "loadbalancers"
+}
+
+variable "worker_subnet_name" {
+  type    = string
+  default = "workernodes"
 }
 
 variable "services_cidr" {
@@ -450,16 +66,34 @@ variable "services_cidr" {
   default = "10.96.0.0/16"
 }
 
+variable "pods_cidr" {
+  type    = string
+  default = "10.244.0.0/16"
+}
+
 variable "node_pools" {
   type = map(object({
-    node_shape     = string
-    node_pool_size = number
+    node_shape                           = string
+    node_pool_size                       = number
+    cni_type                             = string
+    node_shape_ocpus                     = optional(number, null)
+    node_shape_memory_in_gbs             = optional(number, null)
+    eviction_grace_duration              = optional(string, null)
+    is_force_action_after_grace_duration = optional(bool, null)
+    is_force_delete_after_grace_duration = optional(bool, null)
+    node_nsg_ids                         = optional(set(string), [])
+    cycle_modes                          = optional(set(string), [])
+    is_node_cycling_enabled              = optional(bool, null)
+    maximum_surge                        = optional(number, null)
+    maximum_unavailable                  = optional(number, null)
   }))
+}
 
-  default = {
-    "pool-0" = {
-      node_shape     = "VM.Standard.E3.Flex"
-      node_pool_size = 1
-    }
-  }
+variable "addons" {
+  type = map(object({
+    remove_addon_resources_on_delete = optional(bool, true)
+    override_existing                = optional(bool, false)
+    version                          = string
+    configurations                   = set(map(string))
+  }))
 }
