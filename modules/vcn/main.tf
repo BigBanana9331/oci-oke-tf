@@ -41,7 +41,7 @@ resource "oci_core_service_gateway" "service_gateway" {
   dynamic "services" {
     for_each = data.oci_core_services.services.services
     content {
-      service_id = each.value
+      service_id = each.value.id
     }
   }
 }
