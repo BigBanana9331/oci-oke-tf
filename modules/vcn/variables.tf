@@ -31,6 +31,11 @@ variable "service_gateway_name" {
   default = "service-gateway-0"
 }
 
+variable "service_name" {
+  type    = string
+  default = "All SIN Services In Oracle Services Network"
+}
+
 variable "dhcp_options_name" {
   type    = string
   default = "dhcp-options-0"

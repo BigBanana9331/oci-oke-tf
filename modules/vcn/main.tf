@@ -38,11 +38,8 @@ resource "oci_core_service_gateway" "service_gateway" {
   vcn_id         = oci_core_vcn.vcn.id
   display_name   = var.service_gateway_name
 
-  dynamic "services" {
-    for_each = data.oci_core_services.services.services
-    content {
-      service_id = each.value.id
-    }
+  services {
+    service_id = data.oci_core_services.services[var.service_name].id
   }
 }
 
