@@ -86,7 +86,7 @@ variable "node_pools" {
   }))
   default = {
     "pool-0" = {
-      node_shape     = "VM.Standard.E.Flex"
+      node_shape     = "VM.Standard2.1"
       node_pool_size = 1
       cni_type       = "FLANNEL_OVERLAY"
 

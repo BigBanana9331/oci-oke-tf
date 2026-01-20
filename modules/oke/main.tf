@@ -32,7 +32,7 @@ data "oci_containerengine_node_pool_option" "node_pool_option" {
 data "oci_core_images" "shape_specific_images" {
   #Required
   compartment_id = var.tenancy_ocid
-  shape          = "VM.Standard.E.Flex"
+  shape          = "VM.Standard2.1"
 }
 
 locals {
