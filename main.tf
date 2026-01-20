@@ -36,3 +36,11 @@ module "vcn" {
   compartment_id  = var.compartment_id
   vcn_cidr_blocks = ["10.0.0.0/16"]
 }
+
+output "rt" {
+  value = module.vcn.rt
+}
+
+output "nsgs" {
+  value = module.vcn.nsgs
+}
