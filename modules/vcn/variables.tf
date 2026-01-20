@@ -183,32 +183,32 @@ variable "subnets" {
     cidr_block                = string
     dhcp_options_id           = optional(string)
     prohibit_internet_ingress = optional(bool, false)
-    route_table_name            = optional(string)
-    security_list_names         = optional(list(string))
+    route_table_name          = optional(string)
+    security_list_names       = optional(list(string))
   }))
   default = {
     "KubernetesAPIendpoint" = {
       cidr_block                = "10.0.0.0/30"
       prohibit_internet_ingress = true
-      route_table_name           = "routetable-private"
-      security_list_names         = ["default_security_list"]
+      route_table_name          = "routetable-private"
+      security_list_names       = ["default_security_list"]
     },
     "workernodes" = {
       cidr_block                = "10.0.1.0/24"
       prohibit_internet_ingress = true
-      route_table_name            = "routetable-private"
-      security_list_names         = ["default_security_list"]
+      route_table_name          = "routetable-private"
+      security_list_names       = ["default_security_list"]
     },
     "loadbalancers" = {
-      cidr_block        = "10.0.2.0/24"
+      cidr_block          = "10.0.2.0/24"
       route_table_name    = "routetable-public"
       security_list_names = ["default_security_list"]
     },
     "bastion" = {
       cidr_block                = "10.0.3.0/24"
       prohibit_internet_ingress = true
-      route_table_name            = "routetable-private"
-      security_list_names         = ["default_security_list"]
+      route_table_name          = "routetable-private"
+      security_list_names       = ["default_security_list"]
     }
   }
 }

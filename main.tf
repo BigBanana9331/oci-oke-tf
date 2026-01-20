@@ -34,9 +34,9 @@ output "route_tables" {
   value = module.vcn.route_tables
 }
 
-# module "oke" {
-#   source         = "./modules/oke"
-#   compartment_id = var.compartment_id
-#   tenancy_ocid   = var.tenancy_ocid
-#   depends_on     = [module.vcn]
-# }
+module "oke" {
+  source         = "./modules/oke"
+  compartment_id = var.compartment_id
+  tenancy_ocid   = var.tenancy_ocid
+  depends_on     = [module.vcn]
+}

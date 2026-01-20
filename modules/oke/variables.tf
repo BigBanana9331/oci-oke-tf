@@ -7,12 +7,6 @@ variable "vcn_name" {
   default = "acme-dev-vcn"
 }
 
-# variable "vcn_id" {
-#   type = string
-#   nullable = true
-
-# }
-
 variable "cluster_name" {
   type    = string
   default = "oke-0"
@@ -36,7 +30,7 @@ variable "cluster_subnet_name" {
 variable "endpoint_nsg_ids" {
   type     = set(string)
   nullable = true
-  default  = ["nsg-KubernetesAPIendpoint"]
+  default  = null
 }
 
 variable "cni_type" {
@@ -95,6 +89,7 @@ variable "node_pools" {
       node_shape     = "VM.Standard.E.Flex"
       node_pool_size = 1
       cni_type       = "FLANNEL_OVERLAY"
+
     }
   }
 }
