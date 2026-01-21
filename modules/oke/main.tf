@@ -86,7 +86,26 @@ resource "oci_containerengine_cluster" "cluster" {
   }
 }
 
-resource "oci_containerengine_addon" "addon" {
+
+resource "oci_containerengine_addon" "cert_manager_addon" {
+  addon_name                       = "CertificateManager"
+  cluster_id                       = oci_containerengine_cluster.cluster.id
+  remove_addon_resources_on_delete = true
+  override_existing                = false
+  version                          = "v1.19.1"
+}
+
+resource "oci_containerengine_addon" "metric_server_addon" {
+  addon_name                       = "KubernetesMetricsServe"
+  cluster_id                       = oci_containerengine_cluster.cluster.id
+  remove_addon_resources_on_delete = true
+  override_existing                = false
+  version                          = "v0.8.0"
+  depends_on                       = [oci_containerengine_addon.cert_manager_addon]
+}
+
+
+resource "oci_containerengine_addon" "ingress_controller_addon" {
   addon_name                       = "NativeIngressController"
   cluster_id                       = oci_containerengine_cluster.cluster.id
   remove_addon_resources_on_delete = true
@@ -102,6 +121,7 @@ resource "oci_containerengine_addon" "addon" {
     key   = "loadBalancerSubnetId"
     value = [for subnet in data.oci_core_subnets.subnets.subnets : subnet.id if subnet.display_name == var.loadbalancer_subnet_name][0]
   }
+  depends_on = [oci_containerengine_addon.cert_manager_addon]
 }
 
 # resource "oci_containerengine_addon" "addon" {
