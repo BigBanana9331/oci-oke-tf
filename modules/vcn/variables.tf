@@ -9,7 +9,7 @@ variable "vcn_cidr_blocks" {
 
 variable "vcn_name" {
   type    = string
-  default = "acme-dev-vcn"
+  default = "tf-acme-dev-vcn"
 }
 
 variable "internet_gateway_enabled" {
@@ -19,7 +19,7 @@ variable "internet_gateway_enabled" {
 
 variable "internet_gateway_name" {
   type    = string
-  default = "internet-gateway-0"
+  default = "tf-internet-gateway-0"
 }
 
 variable "nat_gateway_name" {
@@ -29,7 +29,7 @@ variable "nat_gateway_name" {
 
 variable "service_gateway_name" {
   type    = string
-  default = "service-gateway-0"
+  default = "tf-service-gateway-0"
 }
 
 variable "service_name" {
@@ -39,7 +39,7 @@ variable "service_name" {
 
 variable "dhcp_options_name" {
   type    = string
-  default = "dhcp-options-0"
+  default = "tf-dhcp-options-0"
 }
 
 variable "dhcp_options_type" {

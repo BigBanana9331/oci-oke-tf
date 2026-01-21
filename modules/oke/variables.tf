@@ -4,12 +4,12 @@ variable "compartment_id" {}
 
 variable "vcn_name" {
   type    = string
-  default = "acme-dev-vcn"
+  default = "tf-acme-dev-vcn"
 }
 
 variable "cluster_name" {
   type    = string
-  default = "oke-0"
+  default = "tf-oke-0"
 }
 
 variable "cluster_type" {
@@ -27,7 +27,7 @@ variable "cluster_subnet_name" {
   default = "KubernetesAPIendpoint"
 }
 
-variable "endpoint_nsg_ids" {
+variable "endpoint_nsg_names" {
   type     = set(string)
   nullable = true
   default  = null
@@ -68,6 +68,64 @@ variable "pods_cidr" {
   default = "10.244.0.0/16"
 }
 
+variable "ca_certificate" {
+  type     = string
+  nullable = true
+  default  = null
+}
+
+variable "client_id" {
+  type     = string
+  nullable = true
+  default  = null
+}
+
+variable "configuration_file" {
+  type     = string
+  nullable = true
+  default  = null
+}
+
+variable "groups_prefix" {
+  type     = string
+  nullable = true
+  default  = null
+}
+
+variable "is_open_id_connect_auth_enabled" {
+  type    = bool
+  default = false
+}
+
+variable "issuer_url" {
+  type     = string
+  nullable = true
+  default  = null
+}
+
+variable "signing_algorithms" {
+  type     = list(string)
+  nullable = true
+  default  = null
+}
+
+variable "username_claim" {
+  type     = string
+  nullable = true
+  default  = null
+}
+
+variable "username_prefix" {
+  type     = string
+  nullable = true
+  default  = null
+}
+
+variable "required_claims" {
+  type    = map(string)
+  default = {}
+}
+
 variable "node_pools" {
   type = map(object({
     node_shape                           = string
@@ -78,18 +136,21 @@ variable "node_pools" {
     eviction_grace_duration              = optional(string, null)
     is_force_action_after_grace_duration = optional(bool, null)
     is_force_delete_after_grace_duration = optional(bool, null)
-    node_nsg_ids                         = optional(set(string), [])
+    node_nsg_names                       = optional(set(string), [])
     cycle_modes                          = optional(set(string), [])
     is_node_cycling_enabled              = optional(bool, null)
     maximum_surge                        = optional(number, null)
     maximum_unavailable                  = optional(number, null)
+    source_type                          = optional(string, "IMAGE")
   }))
   default = {
     "pool-0" = {
-      node_shape     = "VM.Standard.E3.Flex"
-      node_pool_size = 1
-      cni_type       = "FLANNEL_OVERLAY"
-      node_nsg_ids   = ["nsg-workernodes"]
+      node_shape               = "VM.Standard.E3.Flex"
+      node_shape_ocpus         = 2
+      node_shape_memory_in_gbs = 8
+      node_pool_size           = 1
+      cni_type                 = "FLANNEL_OVERLAY"
+      node_nsg_names           = ["nsg-workernodes"]
     }
   }
 }
