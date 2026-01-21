@@ -166,10 +166,13 @@ resource "oci_containerengine_node_pool" "node_pool" {
     maximum_unavailable     = each.value.maximum_unavailable
   }
 
-  node_eviction_node_pool_settings {
-    eviction_grace_duration              = each.value.eviction_grace_duration
-    is_force_action_after_grace_duration = each.value.is_force_action_after_grace_duration
-    is_force_delete_after_grace_duration = each.value.is_force_delete_after_grace_duration
+  dynamic "node_eviction_node_pool_settings" {
+    for_each = each.value.eviction_grace_duration != null ? [1] : []
+    content {
+      eviction_grace_duration              = each.value.eviction_grace_duration
+      is_force_action_after_grace_duration = each.value.is_force_action_after_grace_duration
+      is_force_delete_after_grace_duration = each.value.is_force_delete_after_grace_duration
+    }
   }
 
   node_config_details {
