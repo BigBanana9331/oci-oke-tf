@@ -27,3 +27,7 @@ module "oke" {
   compartment_id = var.compartment_ocid
   depends_on     = [module.vcn]
 }
+
+output "list_image" {
+  value = module.oke.list_image
+}
