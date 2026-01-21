@@ -3,7 +3,8 @@ variable "tenancy_ocid" {}
 variable "compartment_id" {}
 
 variable "vcn_cidr_blocks" {
-  type = list(string)
+  type    = list(string)
+  default = ["10.0.0.0/16"]
 }
 
 variable "vcn_name" {
@@ -335,7 +336,7 @@ variable "nsgs" {
         protocol         = "6"
         destination_type = "SERVICE_CIDR_BLOCK"
         destination      = "all-sin-services-in-oracle-services-network"
-        description      = "Allow nodes to communicate with OKE."
+        description      = "Allow nodes to communicate with OCI services"
       },
       {
         direction        = "EGRESS"

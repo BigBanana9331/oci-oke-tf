@@ -86,10 +86,10 @@ variable "node_pools" {
   }))
   default = {
     "pool-0" = {
-      node_shape     = "VM.Standard2.1"
+      node_shape     = "VM.Standard.E3.Flex"
       node_pool_size = 1
       cni_type       = "FLANNEL_OVERLAY"
-
+      node_nsg_ids   = ["nsg-workernodes"]
     }
   }
 }
