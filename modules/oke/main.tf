@@ -17,26 +17,23 @@ data "oci_core_network_security_groups" "network_security_groups" {
   vcn_id         = data.oci_core_vcns.vcns.virtual_networks[0].id
 }
 
-data "oci_containerengine_node_pool_option" "node_pool_option" {
-  node_pool_option_id = "all"
-  # node_pool_k8s_version = "v1.34.1"
-  # node_pool_os_arch = ""
-  # node_pool_os_type = ""
-}
+# data "oci_containerengine_node_pool_option" "node_pool_option" {
+#   node_pool_option_id = "all"
+#   node_pool_k8s_version = var.kubernetes_version
+# }
 
-data "oci_core_images" "images" {
-  compartment_id = var.tenancy_ocid
-  shape          = "VM.Standard.E3.Flex"
-}
+# data "oci_core_images" "images" {
+#   compartment_id = var.tenancy_ocid
+#   shape          = "VM.Standard.E3.Flex"
+# }
 
-locals {
-  all_images          = data.oci_core_images.images.images
-  all_sources         = data.oci_containerengine_node_pool_option.node_pool_option.sources
-  compartment_images  = [for image in local.all_images : image.id if length(regexall("Oracle-Linux-[0-9]*.[0-9]*-20[0-9]*", image.display_name)) > 0]
-  oracle_linux_images = [for source in local.all_sources : source.image_id if length(regexall("Oracle-Linux-[0-9]*.[0-9]*-20[0-9]*", source.source_name)) > 0]
-  image_id            = tolist(setintersection(toset(local.compartment_images), toset(local.oracle_linux_images)))[0]
-  list_image          = tolist(setintersection(toset(local.compartment_images), toset(local.oracle_linux_images)))
-}
+# locals {
+#   all_images          = data.oci_core_images.images.images
+#   all_sources         = data.oci_containerengine_node_pool_option.node_pool_option.sources
+#   compartment_images  = [for image in local.all_images : image.id if length(regexall("Oracle-Linux-8.10-20[0-9]*", image.display_name)) > 0]
+#   oracle_linux_images = [for source in local.all_sources : source.image_id if length(regexall("Oracle-Linux-8.10-20[0-9]*", source.source_name)) > 0]
+#   image_id            = tolist(setintersection(toset(local.compartment_images), toset(local.oracle_linux_images)))[0]
+# }
 
 resource "oci_containerengine_cluster" "cluster" {
   name               = var.cluster_name
@@ -90,22 +87,44 @@ resource "oci_containerengine_cluster" "cluster" {
 }
 
 resource "oci_containerengine_addon" "addon" {
-  for_each                         = var.addons != null ? var.addons : {}
-  addon_name                       = each.key
+  addon_name                       = "NativeIngressController"
   cluster_id                       = oci_containerengine_cluster.cluster.id
-  remove_addon_resources_on_delete = each.value.remove_addon_resources_on_delete
-  override_existing                = each.value.override_existing
-  version                          = each.value.version
+  remove_addon_resources_on_delete = true
+  override_existing                = false
+  version                          = "1.4.2"
 
-  dynamic "configurations" {
-    for_each = each.value.configurations
-    content {
-      key   = each.key
-      value = each.value
-    }
+  configurations {
+    key   = "compartmentId"
+    value = var.compartment_id
   }
 
+  configurations {
+    key   = "loadBalancerSubnetId"
+    value = [for subnet in data.oci_core_subnets.subnets.subnets : subnet.id if subnet.display_name == var.loadbalancer_subnet_name][0]
+  }
+
+  configurations {
+    key   = "authType"
+    value = "workloadIdentity"
+  }
 }
+
+# resource "oci_containerengine_addon" "addon" {
+#   for_each                         = var.addons != null ? var.addons : {}
+#   addon_name                       = each.key
+#   cluster_id                       = oci_containerengine_cluster.cluster.id
+#   remove_addon_resources_on_delete = each.value.remove_addon_resources_on_delete
+#   override_existing                = each.value.override_existing
+#   version                          = each.value.version
+
+#   dynamic "configurations" {
+#     for_each = each.value.configurations
+#     content {
+#       key   = each.key
+#       value = each.value
+#     }
+#   }
+# }
 
 resource "oci_containerengine_node_pool" "node_pool" {
   for_each = var.node_pools
@@ -149,7 +168,7 @@ resource "oci_containerengine_node_pool" "node_pool" {
   }
 
   node_source_details {
-    image_id    = local.image_id
+    image_id    = each.value.image_id
     source_type = each.value.source_type
   }
 }
