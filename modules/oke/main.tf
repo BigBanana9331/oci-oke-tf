@@ -91,7 +91,7 @@ resource "oci_containerengine_cluster" "cluster" {
 
 
 resource "oci_containerengine_addon" "cert_manager_addon" {
-  addon_name                       = "CertificateManager"
+  addon_name                       = "CertManager"
   cluster_id                       = oci_containerengine_cluster.cluster.id
   remove_addon_resources_on_delete = true
   override_existing                = false
