@@ -177,12 +177,15 @@ resource "oci_containerengine_node_pool" "node_pool" {
 
   node_config_details {
     size = each.value.node_pool_size
+
     nsg_ids = flatten([for nsg in data.oci_core_network_security_groups.network_security_groups.network_security_groups :
     [for nsg_name in each.value.node_nsg_names : nsg.id if nsg.display_name == nsg_name]])
+
     placement_configs {
       subnet_id           = [for subnet in data.oci_core_subnets.subnets.subnets : subnet.id if subnet.display_name == var.worker_subnet_name][0]
       availability_domain = data.oci_identity_availability_domains.availability_domains.availability_domains[0].name
     }
+
     node_pool_pod_network_option_details {
       cni_type = each.value.cni_type
     }
