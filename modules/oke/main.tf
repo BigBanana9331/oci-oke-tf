@@ -99,7 +99,7 @@ resource "oci_containerengine_addon" "cert_manager_addon" {
 }
 
 resource "oci_containerengine_addon" "metric_server_addon" {
-  addon_name                       = "KubernetesMetricsServe"
+  addon_name                       = "KubernetesMetricsServer"
   cluster_id                       = oci_containerengine_cluster.cluster.id
   remove_addon_resources_on_delete = true
   override_existing                = false
