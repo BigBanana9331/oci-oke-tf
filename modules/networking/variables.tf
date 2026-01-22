@@ -1,5 +1,3 @@
-variable "tenancy_ocid" {}
-
 variable "compartment_id" {}
 
 variable "vcn_cidr_blocks" {
@@ -197,6 +195,12 @@ variable "subnets" {
     },
     "bastion" = {
       cidr_block                = "10.0.3.0/24"
+      prohibit_internet_ingress = true
+      route_table_name          = "routetable-private"
+      security_list_names       = ["default_security_list"]
+    },
+    "database" = {
+      cidr_block                = "10.0.4.0/24"
       prohibit_internet_ingress = true
       route_table_name          = "routetable-private"
       security_list_names       = ["default_security_list"]
@@ -483,6 +487,39 @@ variable "nsgs" {
           code = 4
         }
       }
+    ]
+    "nsg-dbs" = [
+      {
+        direction   = "INGRESS"
+        protocol    = "6"
+        source_type = "CIDR_BLOCK"
+        source      = "10.0.1.0/24"
+        description = "Kubernetes worker to database"
+        tcp_options = {
+          destination_port_range = {
+            min = 3306
+            max = 3306
+          }
+        }
+      },
+      {
+        direction        = "EGRESS"
+        protocol         = "1"
+        destination_type = "CIDR_BLOCK"
+        destination      = "0.0.0.0/0"
+        description      = "Path Discovery."
+        icmp_options = {
+          type = 3
+          code = 4
+        }
+      },
+      {
+        direction        = "EGRESS"
+        protocol         = "6"
+        destination_type = "SERVICE_CIDR_BLOCK"
+        destination      = "all-sin-services-in-oracle-services-network"
+        description      = "Allow nodes to communicate with OCI services"
+      },
     ]
   }
 }

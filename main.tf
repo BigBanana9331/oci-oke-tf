@@ -15,15 +15,25 @@ variable "tenancy_ocid" {}
 
 variable "compartment_ocid" {}
 
-module "vcn" {
-  source         = "./modules/vcn"
-  tenancy_ocid   = var.tenancy_ocid
+module "networking" {
+  source         = "./modules/networking"
   compartment_id = var.compartment_ocid
 }
 
-module "oke" {
-  source         = "./modules/oke"
+module "security" {
+  source         = "./modules/security"
+  compartment_id = var.compartment_ocid
+}
+
+module "container" {
+  source         = "./modules/container"
   tenancy_ocid   = var.tenancy_ocid
   compartment_id = var.compartment_ocid
-  depends_on     = [module.vcn]
+  depends_on     = [module.networking]
+}
+
+module "database" {
+  source         = "./modules/database"
+  tenancy_ocid   = var.tenancy_ocid
+  compartment_id = var.tenancy_ocid
 }
