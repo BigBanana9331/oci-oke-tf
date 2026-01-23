@@ -3,7 +3,6 @@ variable "compartment_id" {}
 variable "defined_tags" {
   type = map(string)
   default = {
-    "AutoTagging.AppName"   = "Tuntas"
     "AutoTagging.CreatedBy" = "Terraform"
   }
 }
@@ -18,15 +17,15 @@ variable "vcn_name" {
   default = "tf-acme-dev-vcn"
 }
 
-variable "internet_gateway_enabled" {
-  type    = bool
-  default = false
-}
+# variable "internet_gateway_enabled" {
+#   type    = bool
+#   default = false
+# }
 
-variable "internet_gateway_name" {
-  type    = string
-  default = "tf-internet-gateway-0"
-}
+# variable "internet_gateway_name" {
+#   type    = string
+#   default = "tf-internet-gateway-0"
+# }
 
 variable "nat_gateway_name" {
   type    = string
@@ -35,7 +34,7 @@ variable "nat_gateway_name" {
 
 variable "service_gateway_name" {
   type    = string
-  default = "tf-service-gateway-0"
+  default = "service-gateway-0"
 }
 
 variable "service_name" {
@@ -45,7 +44,7 @@ variable "service_name" {
 
 variable "dhcp_options_name" {
   type    = string
-  default = "tf-dhcp-options-0"
+  default = "dhcp-options-0"
 }
 
 variable "dhcp_options_type" {
@@ -164,14 +163,14 @@ variable "route_tables" {
         description         = "Rule for traffic to OCI services"
       }
     ],
-    "routetable-public" = [
-      {
-        network_entity_name = "intgw"
-        destination         = "0.0.0.0/0"
-        destination_type    = "CIDR_BLOCK"
-        description         = "Rule for traffic to internet"
-      }
-    ]
+    # "routetable-public" = [
+    #   {
+    #     network_entity_name = "intgw"
+    #     destination         = "0.0.0.0/0"
+    #     destination_type    = "CIDR_BLOCK"
+    #     description         = "Rule for traffic to internet"
+    #   }
+    # ]
   }
 }
 
@@ -198,7 +197,7 @@ variable "subnets" {
     },
     "loadbalancers" = {
       cidr_block          = "10.0.2.0/24"
-      route_table_name    = "routetable-public"
+      route_table_name    = "routetable-private"
       security_list_names = ["default_security_list"]
     },
     "bastion" = {
@@ -406,7 +405,7 @@ variable "nsgs" {
         }
       }
     ]
-    "nsg-KubernetesAPIendpoint" = [
+    "nsg-controlplane" = [
       {
         direction   = "INGRESS"
         protocol    = "6"

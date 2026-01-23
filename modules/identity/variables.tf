@@ -14,13 +14,13 @@ variable "namespace" {
 
   default = {
     name        = "AutoTagging"
-    description = "Automation tag namespace when created resource"
+    description = "Automation tag namespace when create resource"
     tags = {
       "AppName" = {
         description = "Managed Application Name"
       }
       "CreatedBy" = {
-        description = "Which created reources"
+        description = "Which create reources"
       }
     }
   }

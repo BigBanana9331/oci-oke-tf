@@ -24,7 +24,7 @@ locals {
   network_entity_ids = {
     natgw = oci_core_nat_gateway.nat_gateway.id
     svcgw = oci_core_service_gateway.service_gateway.id
-    intgw = oci_core_internet_gateway.internet_gateway.id
+    # intgw = oci_core_internet_gateway.internet_gateway.id
   }
 
   seclists = {
@@ -66,13 +66,13 @@ resource "oci_core_dhcp_options" "dhcp_options" {
   defined_tags = var.defined_tags
 }
 
-resource "oci_core_internet_gateway" "internet_gateway" {
-  compartment_id = var.compartment_id
-  vcn_id         = oci_core_vcn.vcn.id
-  enabled        = var.internet_gateway_enabled
-  display_name   = var.internet_gateway_name
-  defined_tags   = var.defined_tags
-}
+# resource "oci_core_internet_gateway" "internet_gateway" {
+#   compartment_id = var.compartment_id
+#   vcn_id         = oci_core_vcn.vcn.id
+#   enabled        = var.internet_gateway_enabled
+#   display_name   = var.internet_gateway_name
+#   # defined_tags   = var.defined_tags
+# }
 
 resource "oci_core_nat_gateway" "nat_gateway" {
   compartment_id = var.compartment_id
@@ -190,7 +190,7 @@ resource "oci_core_route_table" "route_tables" {
   }
 
   depends_on = [
-    oci_core_internet_gateway.internet_gateway,
+    # oci_core_internet_gateway.internet_gateway,
     oci_core_nat_gateway.nat_gateway,
     oci_core_service_gateway.service_gateway
   ]
