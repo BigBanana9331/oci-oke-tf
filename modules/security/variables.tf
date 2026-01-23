@@ -33,3 +33,11 @@ variable "defined_tags" {
     "AutoTagging.CreatedBy" = "Terraform"
   }
 }
+
+variable "freeform_tags" {
+  type = map(string)
+  default = {
+    "CreatedBy" = "Terraform"
+    "ManagedBy" = "InfraTeam"
+  }
+}

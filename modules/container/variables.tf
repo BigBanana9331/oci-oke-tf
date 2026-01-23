@@ -2,6 +2,14 @@ variable "tenancy_ocid" {}
 
 variable "compartment_id" {}
 
+variable "freeform_tags" {
+  type = map(string)
+  default = {
+    "CreatedBy" = "Terraform"
+    "ManagedBy" = "InfraTeam"
+  }
+}
+
 variable "vcn_name" {
   type    = string
   default = "tf-acme-dev-vcn"

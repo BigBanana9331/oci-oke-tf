@@ -25,3 +25,11 @@ variable "namespace" {
     }
   }
 }
+
+variable "freeform_tags" {
+  type = map(string)
+  default = {
+    "CreatedBy" = "Terraform"
+    "ManagedBy" = "InfraTeam"
+  }
+}

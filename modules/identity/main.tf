@@ -3,6 +3,7 @@ resource "oci_identity_tag_namespace" "namespace" {
   name           = var.namespace.name
   description    = var.namespace.description
   is_retired     = var.namespace.is_retired
+  freeform_tags  = var.freeform_tags
 }
 
 resource "oci_identity_tag" "tags" {
@@ -12,4 +13,5 @@ resource "oci_identity_tag" "tags" {
   description      = each.value.description
   is_cost_tracking = each.value.is_cost_tracking
   is_retired       = each.value.is_retired
+  freeform_tags    = var.freeform_tags
 }

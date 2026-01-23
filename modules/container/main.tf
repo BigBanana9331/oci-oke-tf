@@ -42,7 +42,8 @@ resource "oci_containerengine_cluster" "cluster" {
   vcn_id             = data.oci_core_vcns.vcns.virtual_networks[0].id
   type               = var.cluster_type
   kubernetes_version = var.kubernetes_version
-  defined_tags       = var.defined_tags
+  # defined_tags       = var.defined_tags
+  freeform_tags = var.freeform_tags
 
   endpoint_config {
     subnet_id            = [for subnet in data.oci_core_subnets.subnets.subnets : subnet.id if subnet.display_name == var.cluster_subnet_name][0]
@@ -97,6 +98,8 @@ resource "oci_identity_policy" "policy" {
   compartment_id = var.compartment_id
   description    = "policy created by terraform"
   name           = "oke-policy"
+  freeform_tags  = var.freeform_tags
+
   statements = [
     "Allow any-user to manage load-balancers in compartment ${data.oci_identity_compartment.compartment.name} where all {request.principal.type = 'workload', request.principal.namespace = 'native-ingress-controller-system', request.principal.service_account = 'oci-native-ingress-controller', request.principal.cluster_id = '${oci_containerengine_cluster.cluster.id}'}",
     "Allow any-user to use virtual-network-family in compartment ${data.oci_identity_compartment.compartment.name} where all {request.principal.type = 'workload', request.principal.namespace = 'native-ingress-controller-system', request.principal.service_account = 'oci-native-ingress-controller', request.principal.cluster_id = '${oci_containerengine_cluster.cluster.id}'}",
@@ -176,7 +179,8 @@ resource "oci_containerengine_node_pool" "node_pool" {
   compartment_id     = var.compartment_id
   kubernetes_version = var.kubernetes_version
   node_shape         = each.value.node_shape
-  defined_tags       = var.defined_tags
+  # defined_tags       = var.defined_tags
+  freeform_tags = var.freeform_tags
 
   node_shape_config {
     memory_in_gbs = each.value.node_shape_memory_in_gbs

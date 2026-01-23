@@ -51,6 +51,7 @@ resource "oci_core_vcn" "vcn" {
   compartment_id = var.compartment_id
   cidr_blocks    = var.vcn_cidr_blocks
   display_name   = var.vcn_name
+  freeform_tags  = var.freeform_tags
   # defined_tags   = var.defined_tags
 }
 
@@ -58,6 +59,7 @@ resource "oci_core_dhcp_options" "dhcp_options" {
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
   display_name   = var.dhcp_options_name
+  freeform_tags  = var.freeform_tags
   options {
     type        = var.dhcp_options_type
     server_type = var.dhcp_options_server_type
@@ -69,6 +71,7 @@ resource "oci_core_nat_gateway" "nat_gateway" {
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
   display_name   = var.nat_gateway_name
+  freeform_tags  = var.freeform_tags
   # defined_tags   = var.defined_tags
 }
 
@@ -76,6 +79,7 @@ resource "oci_core_service_gateway" "service_gateway" {
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
   display_name   = var.service_gateway_name
+  freeform_tags  = var.freeform_tags
   # defined_tags   = var.defined_tags
 
   services {
@@ -89,6 +93,7 @@ resource "oci_core_security_list" "security_lists" {
   display_name   = each.key
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
+  freeform_tags  = var.freeform_tags
   # defined_tags   = var.defined_tags
 
   dynamic "egress_security_rules" {
@@ -169,6 +174,7 @@ resource "oci_core_route_table" "route_tables" {
   display_name   = each.key
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
+  freeform_tags  = var.freeform_tags
   # defined_tags   = var.defined_tags
   dynamic "route_rules" {
     for_each = each.value != null ? each.value : []
@@ -197,6 +203,7 @@ resource "oci_core_subnet" "subnets" {
   dhcp_options_id           = each.value.dhcp_options_id
   route_table_id            = local.route_tables[each.value.route_table_name]
   security_list_ids         = [for sl in each.value.security_list_names : local.seclists[sl]]
+  freeform_tags             = var.freeform_tags
   # defined_tags              = var.defined_tags
 }
 
@@ -206,6 +213,7 @@ resource "oci_core_network_security_group" "network_security_groups" {
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
   display_name   = each.key
+  freeform_tags  = var.freeform_tags
   # defined_tags   = var.defined_tags
 }
 

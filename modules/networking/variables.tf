@@ -1,5 +1,13 @@
 variable "compartment_id" {}
 
+variable "freeform_tags" {
+  type = map(string)
+  default = {
+    "CreatedBy" = "Terraform"
+    "ManagedBy" = "InfraTeam"
+  }
+}
+
 # variable "defined_tags" {
 #   type = map(string)
 #   default = {
