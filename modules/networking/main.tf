@@ -24,7 +24,6 @@ locals {
   network_entity_ids = {
     natgw = oci_core_nat_gateway.nat_gateway.id
     svcgw = oci_core_service_gateway.service_gateway.id
-    # intgw = oci_core_internet_gateway.internet_gateway.id
   }
 
   seclists = {
@@ -52,7 +51,7 @@ resource "oci_core_vcn" "vcn" {
   compartment_id = var.compartment_id
   cidr_blocks    = var.vcn_cidr_blocks
   display_name   = var.vcn_name
-  defined_tags   = var.defined_tags
+  # defined_tags   = var.defined_tags
 }
 
 resource "oci_core_dhcp_options" "dhcp_options" {
@@ -63,29 +62,21 @@ resource "oci_core_dhcp_options" "dhcp_options" {
     type        = var.dhcp_options_type
     server_type = var.dhcp_options_server_type
   }
-  defined_tags = var.defined_tags
+  # defined_tags = var.defined_tags
 }
-
-# resource "oci_core_internet_gateway" "internet_gateway" {
-#   compartment_id = var.compartment_id
-#   vcn_id         = oci_core_vcn.vcn.id
-#   enabled        = var.internet_gateway_enabled
-#   display_name   = var.internet_gateway_name
-#   # defined_tags   = var.defined_tags
-# }
 
 resource "oci_core_nat_gateway" "nat_gateway" {
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
   display_name   = var.nat_gateway_name
-  defined_tags   = var.defined_tags
+  # defined_tags   = var.defined_tags
 }
 
 resource "oci_core_service_gateway" "service_gateway" {
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
   display_name   = var.service_gateway_name
-  defined_tags   = var.defined_tags
+  # defined_tags   = var.defined_tags
 
   services {
     service_id = data.oci_core_services.services.services[0].id
@@ -98,7 +89,7 @@ resource "oci_core_security_list" "security_lists" {
   display_name   = each.key
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
-  defined_tags   = var.defined_tags
+  # defined_tags   = var.defined_tags
 
   dynamic "egress_security_rules" {
     for_each = each.value.egress_security_rules == null ? [] : each.value.egress_security_rules
@@ -178,7 +169,7 @@ resource "oci_core_route_table" "route_tables" {
   display_name   = each.key
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
-  defined_tags   = var.defined_tags
+  # defined_tags   = var.defined_tags
   dynamic "route_rules" {
     for_each = each.value != null ? each.value : []
     content {
@@ -190,7 +181,6 @@ resource "oci_core_route_table" "route_tables" {
   }
 
   depends_on = [
-    # oci_core_internet_gateway.internet_gateway,
     oci_core_nat_gateway.nat_gateway,
     oci_core_service_gateway.service_gateway
   ]
@@ -207,7 +197,7 @@ resource "oci_core_subnet" "subnets" {
   dhcp_options_id           = each.value.dhcp_options_id
   route_table_id            = local.route_tables[each.value.route_table_name]
   security_list_ids         = [for sl in each.value.security_list_names : local.seclists[sl]]
-  defined_tags              = var.defined_tags
+  # defined_tags              = var.defined_tags
 }
 
 resource "oci_core_network_security_group" "network_security_groups" {
@@ -216,7 +206,7 @@ resource "oci_core_network_security_group" "network_security_groups" {
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
   display_name   = each.key
-  defined_tags   = var.defined_tags
+  # defined_tags   = var.defined_tags
 }
 
 resource "oci_core_network_security_group_security_rule" "network_security_group_security_rule" {

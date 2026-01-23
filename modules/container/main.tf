@@ -17,23 +17,19 @@ data "oci_core_network_security_groups" "network_security_groups" {
   vcn_id         = data.oci_core_vcns.vcns.virtual_networks[0].id
 }
 
-# data "oci_containerengine_node_pool_option" "node_pool_option" {
-#   node_pool_option_id = "all"
-#   node_pool_k8s_version = var.kubernetes_version
-# }
+data "oci_containerengine_node_pool_option" "node_pool_option" {
+  node_pool_option_id   = var.node_pool_option_id
+  node_pool_k8s_version = var.kubernetes_version
+  node_pool_os_arch     = var.node_pool_os_arch
+  node_pool_os_type     = var.node_pool_os_type
+}
 
-# data "oci_core_images" "images" {
-#   compartment_id = var.tenancy_ocid
-#   shape          = "VM.Standard.E3.Flex"
-# }
-
-# locals {
-#   all_images          = data.oci_core_images.images.images
-#   all_sources         = data.oci_containerengine_node_pool_option.node_pool_option.sources
-#   compartment_images  = [for image in local.all_images : image.id if length(regexall("Oracle-Linux-8.10-20[0-9]*", image.display_name)) > 0]
-#   oracle_linux_images = [for source in local.all_sources : source.image_id if length(regexall("Oracle-Linux-8.10-20[0-9]*", source.source_name)) > 0]
-#   image_id            = tolist(setintersection(toset(local.compartment_images), toset(local.oracle_linux_images)))[0]
-# }
+locals {
+  image_id = [
+    for source in data.oci_containerengine_node_pool_option.node_pool_option.sources :
+    source.image_id if strcontains(source.source_name, "Gen2-GPU") == false
+  ][0]
+}
 
 resource "oci_containerengine_cluster" "cluster" {
   name               = var.cluster_name

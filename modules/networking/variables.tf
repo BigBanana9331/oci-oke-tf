@@ -1,11 +1,11 @@
 variable "compartment_id" {}
 
-variable "defined_tags" {
-  type = map(string)
-  default = {
-    "AutoTagging.CreatedBy" = "Terraform"
-  }
-}
+# variable "defined_tags" {
+#   type = map(string)
+#   default = {
+#     "AutoTagging.CreatedBy" = "Terraform"
+#   }
+# }
 
 variable "vcn_cidr_blocks" {
   type    = list(string)
@@ -16,16 +16,6 @@ variable "vcn_name" {
   type    = string
   default = "tf-acme-dev-vcn"
 }
-
-# variable "internet_gateway_enabled" {
-#   type    = bool
-#   default = false
-# }
-
-# variable "internet_gateway_name" {
-#   type    = string
-#   default = "tf-internet-gateway-0"
-# }
 
 variable "nat_gateway_name" {
   type    = string
@@ -106,7 +96,7 @@ variable "security_lists" {
     })))
   }))
   default = {
-    "default_security_list" = {
+    "default-security-list" = {
       egress_security_rules = [
         {
           protocol         = "1"
@@ -149,7 +139,7 @@ variable "route_tables" {
     destination_type    = optional(string)
   })))
   default = {
-    "routetable-private" = [
+    "default-routetable" = [
       {
         network_entity_name = "natgw"
         destination         = "0.0.0.0/0"
@@ -163,14 +153,6 @@ variable "route_tables" {
         description         = "Rule for traffic to OCI services"
       }
     ],
-    # "routetable-public" = [
-    #   {
-    #     network_entity_name = "intgw"
-    #     destination         = "0.0.0.0/0"
-    #     destination_type    = "CIDR_BLOCK"
-    #     description         = "Rule for traffic to internet"
-    #   }
-    # ]
   }
 }
 
@@ -186,31 +168,31 @@ variable "subnets" {
     "KubernetesAPIendpoint" = {
       cidr_block                = "10.0.0.0/30"
       prohibit_internet_ingress = true
-      route_table_name          = "routetable-private"
-      security_list_names       = ["default_security_list"]
+      route_table_name          = "default-routetable"
+      security_list_names       = ["default-security-list"]
     },
     "workernodes" = {
       cidr_block                = "10.0.1.0/24"
       prohibit_internet_ingress = true
-      route_table_name          = "routetable-private"
-      security_list_names       = ["default_security_list"]
+      route_table_name          = "default-routetable"
+      security_list_names       = ["default-security-list"]
     },
     "loadbalancers" = {
       cidr_block          = "10.0.2.0/24"
-      route_table_name    = "routetable-private"
-      security_list_names = ["default_security_list"]
+      route_table_name    = "default-routetable"
+      security_list_names = ["default-security-list"]
     },
     "bastion" = {
       cidr_block                = "10.0.3.0/24"
       prohibit_internet_ingress = true
-      route_table_name          = "routetable-private"
-      security_list_names       = ["default_security_list"]
+      route_table_name          = "default-routetable"
+      security_list_names       = ["default-security-list"]
     },
     "database" = {
       cidr_block                = "10.0.4.0/24"
       prohibit_internet_ingress = true
-      route_table_name          = "routetable-private"
-      security_list_names       = ["default_security_list"]
+      route_table_name          = "default-routetable"
+      security_list_names       = ["default-security-list"]
     }
   }
 }

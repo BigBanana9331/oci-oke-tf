@@ -22,6 +22,21 @@ variable "kubernetes_version" {
   default = "v1.34.1"
 }
 
+variable "node_pool_option_id" {
+  type    = string
+  default = "all"
+}
+
+variable "node_pool_os_arch" {
+  type    = string
+  default = "X86_64"
+}
+
+variable "node_pool_os_type" {
+  type    = string
+  default = "OL8"
+}
+
 variable "cluster_subnet_name" {
   type    = string
   default = "KubernetesAPIendpoint"
