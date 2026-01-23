@@ -128,9 +128,6 @@ resource "oci_identity_policy" "policy" {
   depends_on = [oci_containerengine_cluster.cluster]
 }
 
-
-
-
 resource "oci_containerengine_addon" "cert_manager_addon" {
   addon_name                       = "CertManager"
   cluster_id                       = oci_containerengine_cluster.cluster.id
@@ -168,8 +165,6 @@ resource "oci_containerengine_addon" "ingress_controller_addon" {
 
   depends_on = [oci_containerengine_addon.cert_manager_addon]
 }
-
-
 
 resource "oci_containerengine_node_pool" "node_pool" {
   for_each = var.node_pools
@@ -225,6 +220,8 @@ resource "oci_containerengine_node_pool" "node_pool" {
   }
 }
 
+
+
 resource "oci_containerengine_addon" "auto_scaler_addon" {
   addon_name                       = "ClusterAutoscaler"
   cluster_id                       = oci_containerengine_cluster.cluster.id
@@ -238,7 +235,7 @@ resource "oci_containerengine_addon" "auto_scaler_addon" {
   configurations {
     key = "nodes"
     # value = "2:4:ocid1.nodepool.oc1.iad.aaaaaaaaae____ydq, 1:5:ocid1.nodepool.oc1.iad.aaaaaaaaah____bzr"
-    value = join(", ", formatlist("2:4:%s", [for nodepool in oci_containerengine_node_pool.node_pool : nodepool.id]))
+    value = join(", ", formatlist("1:2:%s", [for nodepool in oci_containerengine_node_pool.node_pool : nodepool.id]))
   }
 
   depends_on = [oci_containerengine_node_pool.node_pool]
