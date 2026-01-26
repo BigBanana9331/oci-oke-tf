@@ -1,3 +1,13 @@
+terraform {
+  required_version = ">= 1.5.7"
+  required_providers {
+    oci = {
+      source  = "oracle/oci"
+      version = "7.31.0"
+    }
+  }
+}
+
 variable "compartment_id" {
   type = string
 }
@@ -9,7 +19,7 @@ variable "vault_name" {
 
 variable "vault_type" {
   type    = string
-  default = "DEFAULT" # default = ["DEFAULT", "VIRTUAL_PRIVATE"]
+  default = "DEFAULT" # DEFAULT, VIRTUAL_PRIVATE
 }
 
 variable "keys" {
@@ -30,6 +40,31 @@ variable "keys" {
       protection_mode     = "SOFTWARE"
       key_shape_algorithm = "AES"
       key_shape_length    = "32"
+    }
+  }
+}
+
+variable "secrets" {
+  type = map(object({
+    key_name               = optional(string, "encryption-key")
+    description            = optional(string)
+    enable_auto_generation = optional(bool)
+    metadata               = optional(map(string))
+    generation_template    = optional(string)
+    generation_type        = optional(string)
+    passphrase_length      = optional(number)
+    secret_template        = optional(string)
+  }))
+  default = {
+    "dev-mysql-admin-password" = {
+
+      generation_template = "DBAAS_DEFAULT_PASSWORD"
+      generation_type     = "PASSPHRASE"
+      passphrase_length   = 32
+    }
+    "dev-nodepool-ssh-key" = {
+      generation_template = "RSA_2048"
+      generation_type     = "SSH_KEY"
     }
   }
 }

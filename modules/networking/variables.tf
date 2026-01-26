@@ -1,3 +1,14 @@
+terraform {
+  required_version = ">= 1.5.7"
+  required_providers {
+    oci = {
+      source  = "oracle/oci"
+      version = "7.31.0"
+    }
+  }
+}
+
+
 variable "compartment_id" {
   type = string
 }
@@ -592,21 +603,5 @@ variable "nsgs" {
 }
 
 
-variable "private_endpoint" {
-  type = object({
-    subnet_name                                = string
-    name                                       = string
-    description                                = optional(string)
-    nsg_id_list                                = optional(list(string))
-    dns_zones                                  = optional(list(string))
-    is_used_with_configuration_source_provider = optional(bool)
-    security_attributes                        = optional(map(string))
-  })
 
-  default = {
-    name        = "dev-rms-pe"
-    subnet_name = "dev-subnet-privateendpoint"
-    nsg_id_list = ["dev-nsg-privateendpoint"]
-  }
-}
 

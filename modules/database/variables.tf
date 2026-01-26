@@ -1,3 +1,17 @@
+terraform {
+  required_version = ">= 1.5.7"
+  required_providers {
+    oci = {
+      source  = "oracle/oci"
+      version = "7.30.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "3.8.0"
+    }
+  }
+}
+
 variable "tenancy_ocid" {
   type = string
 }
@@ -23,7 +37,7 @@ variable "subnet_name" {
 
 variable "nsg_names" {
   type    = set(string)
-  default = ["dev-nsg-mysql"]
+  default = []
 }
 
 variable "shape_name" {
@@ -65,6 +79,11 @@ variable "vault_name" {
   default = "dev-vault"
 }
 
+variable "admin_password_secret_name" {
+  type    = string
+  default = "dev-mysql-admin-password"
+}
+
 variable "admin_password" {
   type = object({
     display_name = string
@@ -96,7 +115,7 @@ variable "description" {
 
 variable "data_storage_size_in_gb" {
   type    = string
-  default = "50"
+  default = "100"
 }
 
 variable "is_auto_expand_storage_enabled" {

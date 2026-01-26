@@ -1,14 +1,3 @@
-terraform {
-  required_version = ">= 1.5.7"
-  required_providers {
-    oci = {
-      source  = "oracle/oci"
-      version = "7.30.0"
-    }
-  }
-}
-
-
 data "oci_core_services" "services" {}
 
 locals {
@@ -338,24 +327,3 @@ resource "oci_core_subnet" "subnets" {
     ignore_changes = [defined_tags, freeform_tags]
   }
 }
-
-# resource "oci_resourcemanager_private_endpoint" "private_endpoint" {
-#   compartment_id = var.compartment_id
-#   vcn_id         = oci_core_vcn.vcn.id
-#   subnet_id      = var.private_endpoint.subnet_name
-#   display_name   = var.private_endpoint.name
-#   description    = var.private_endpoint.description
-#   nsg_id_list    = [for nsg in var.private_endpoint.nsg_id_list : local.nsgs[nsg]]
-
-#   dns_zones                                  = var.private_endpoint.dns_zones
-#   is_used_with_configuration_source_provider = var.private_endpoint.is_used_with_configuration_source_provider
-#   security_attributes                        = var.private_endpoint.security_attributes
-
-#   # tags
-#   defined_tags  = var.tags.definedTags
-#   freeform_tags = var.tags.freeformTags
-
-#   lifecycle {
-#     ignore_changes = [defined_tags, freeform_tags]
-#   }
-# }

@@ -1,17 +1,3 @@
-terraform {
-  required_version = ">= 1.5.7"
-  required_providers {
-    oci = {
-      source  = "oracle/oci"
-      version = "7.30.0"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = "3.8.0"
-    }
-  }
-}
-
 provider "oci" {
   region = "ap-singapore-1"
 }
@@ -58,16 +44,14 @@ module "bucket" {
   depends_on     = [module.vault]
 }
 
-# Limited due to trial
-# module "file" {
-#   source         = "./modules/filestorage"
-#   tenancy_ocid   = var.tenancy_ocid
-#   compartment_id = var.compartment_ocid
-#   depends_on     = [module.vault]
-# }
-
 module "bastion" {
   source         = "./modules/bastion"
+  compartment_id = var.compartment_ocid
+  depends_on     = [module.networking]
+}
+
+module "privateendpoint" {
+  source         = "./modules/privateendpoint"
   compartment_id = var.compartment_ocid
   depends_on     = [module.networking]
 }
@@ -78,16 +62,16 @@ module "apigateway" {
   depends_on     = [module.networking]
 }
 
-module "container" {
-  source         = "./modules/container"
-  tenancy_ocid   = var.tenancy_ocid
-  compartment_id = var.compartment_ocid
-  depends_on     = [module.networking, module.loggroup]
-}
+# module "container" {
+#   source         = "./modules/container"
+#   tenancy_ocid   = var.tenancy_ocid
+#   compartment_id = var.compartment_ocid
+#   depends_on     = [module.networking, module.loggroup]
+# }
 
-module "database" {
-  source         = "./modules/database"
-  tenancy_ocid   = var.tenancy_ocid
-  compartment_id = var.compartment_ocid
-  depends_on     = [module.networking, module.vault]
-}
+# module "database" {
+#   source         = "./modules/database"
+#   tenancy_ocid   = var.tenancy_ocid
+#   compartment_id = var.compartment_ocid
+#   depends_on     = [module.networking, module.vault]
+# }

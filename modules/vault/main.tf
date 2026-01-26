@@ -1,13 +1,3 @@
-terraform {
-  required_version = ">= 1.5.7"
-  required_providers {
-    oci = {
-      source  = "oracle/oci"
-      version = "7.30.0"
-    }
-  }
-}
-
 resource "oci_kms_vault" "vault" {
   #Required
   compartment_id = var.compartment_id
@@ -45,6 +35,36 @@ resource "oci_kms_key" "keys" {
       time_of_last_rotation     = each.value.time_of_last_rotation
       time_of_next_rotation     = each.value.time_of_next_rotation
       time_of_schedule_start    = each.value.time_of_schedule_start
+    }
+  }
+
+  # tags
+  defined_tags  = var.tags.definedTags
+  freeform_tags = var.tags.freeformTags
+
+  lifecycle {
+    ignore_changes = [defined_tags, freeform_tags]
+  }
+}
+
+resource "oci_vault_secret" "secrets" {
+  for_each       = var.secrets
+  compartment_id = var.compartment_id
+  key_id         = [for key in oci_kms_key.keys : key.id if key.display_name == each.value.key_name]
+  vault_id       = oci_kms_vault.vault.id
+  secret_name    = each.key
+
+  description            = each.value.description
+  enable_auto_generation = each.value.enable_auto_generation
+  metadata               = each.value.metadata
+
+  dynamic "secret_generation_context" {
+    for_each = each.value.enable_auto_generation == true ? [1] : []
+    content {
+      generation_template = each.value.generation_template
+      generation_type     = each.value.generation_type
+      passphrase_length   = each.value.passphrase_length
+      secret_template     = each.value.secret_template
     }
   }
 

@@ -1,3 +1,15 @@
+terraform {
+  required_version = ">= 1.5.7"
+  required_providers {
+    oci = {
+      source  = "oracle/oci"
+      version = "7.31.0"
+    }
+  }
+}
+
+
+
 variable "compartment_id" {
   type = string
 }
@@ -11,7 +23,7 @@ variable "vault_name" {
 variable "key_name" {
   type     = string
   nullable = true
-  default  = "master-key"
+  default  = "encryption-key"
 }
 
 variable "queue_dead_letter_queue_delivery_count" {

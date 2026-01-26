@@ -1,13 +1,3 @@
-terraform {
-  required_version = ">= 1.5.7"
-  required_providers {
-    oci = {
-      source  = "oracle/oci"
-      version = "7.30.0"
-    }
-  }
-}
-
 data "oci_identity_availability_domains" "availability_domains" {
   compartment_id = var.tenancy_ocid
 }

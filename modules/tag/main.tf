@@ -1,13 +1,3 @@
-terraform {
-  required_version = ">= 1.5.7"
-  required_providers {
-    oci = {
-      source  = "oracle/oci"
-      version = "7.30.0"
-    }
-  }
-}
-
 resource "oci_identity_tag_namespace" "namespace" {
   compartment_id = var.compartment_id
   name           = var.namespace.name
