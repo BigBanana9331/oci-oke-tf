@@ -75,22 +75,22 @@ resource "oci_vault_secret" "admin_password" {
 }
 
 resource "oci_mysql_mysql_db_system" "mysql_db_system" {
-  display_name = var.display_name
-  # description         = var.description
+  display_name        = var.display_name
+  description         = var.description
   compartment_id      = var.compartment_id
   availability_domain = data.oci_identity_availability_domains.availability_domains.availability_domains[0].name
-  # is_highly_available = var.is_highly_available
-  shape_name = var.shape_name
+  is_highly_available = var.is_highly_available
+  shape_name          = var.shape_name
   # mysql_version       = var.mysql_version
   subnet_id = [for subnet in data.oci_core_subnets.subnets.subnets : subnet.id if subnet.display_name == var.subnet_name][0]
   # nsg_ids = flatten([for nsg in data.oci_core_network_security_groups.network_security_groups.network_security_groups :
   # [for nsg_name in var.nsg_names : nsg.id if nsg.display_name == nsg_name]])
-  # data_storage_size_in_gb = var.data_storage_size_in_gb
+  data_storage_size_in_gb = var.data_storage_size_in_gb
   # access_mode             = var.access_mode
   # crash_recovery          = var.crash_recovery
   # database_management     = var.database_management
-  # admin_username          = var.admin_username
-  # admin_password          = random_password.password.result
+  admin_username = var.admin_username
+  admin_password = random_password.password.result
 
   # dynamic "encrypt_data" {
   #   for_each = var.key_generation_type != null ? [1] : []

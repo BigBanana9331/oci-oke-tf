@@ -24,7 +24,7 @@ variable "bastion_name" {
 
 variable "bastion_type" {
   type    = string
-  default = "standard"
+  default = "STANDARD"
 }
 
 variable "dns_proxy_status" {
