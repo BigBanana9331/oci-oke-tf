@@ -52,6 +52,13 @@ module "bucket" {
   depends_on     = [module.vault]
 }
 
+module "file" {
+  source         = "./modules/filestorage"
+  tenancy_ocid   = var.tenancy_ocid
+  compartment_id = var.compartment_ocid
+  depends_on     = [module.vault]
+}
+
 module "bastion" {
   source         = "./modules/bastion"
   compartment_id = var.compartment_ocid
