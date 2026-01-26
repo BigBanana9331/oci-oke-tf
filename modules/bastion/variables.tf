@@ -39,6 +39,6 @@ variable "max_session_ttl_in_seconds" {
 }
 
 variable "client_cidr_block_allow_list" {
-  type = list(string)
-  default = [ "0.0.0.0/0" ]
+  type    = list(string)
+  default = ["0.0.0.0/0"]
 }

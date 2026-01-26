@@ -161,12 +161,12 @@ variable "subnets" {
     security_list_names        = optional(list(string))
   }))
   default = {
-    "dev-subnet-oke-apiendpoint " = {
+    "dev-subnet-oke-apiendpoint" = {
       cidr_block          = "10.0.0.0/30"
       route_table_name    = "routetable-default"
       security_list_names = ["seclist-default"]
     },
-    "dev-subnet-oke-workernode " = {
+    "dev-subnet-oke-workernode" = {
       cidr_block          = "10.0.1.0/24"
       route_table_name    = "routetable-default"
       security_list_names = ["seclist-default"]
