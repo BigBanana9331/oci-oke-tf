@@ -28,7 +28,7 @@ variable "nsg_names" {
 
 variable "shape_name" {
   type    = string
-  default = "MySQL.VM.Standard.E4.1.8GB"
+  default = "MySQL.2"
 }
 
 variable "mysql_version" {
