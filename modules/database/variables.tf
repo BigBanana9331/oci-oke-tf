@@ -28,7 +28,7 @@ variable "nsg_names" {
 
 variable "shape_name" {
   type    = string
-  default = "MySQL.Free"
+  default = "MySQL.2"
 }
 
 variable "mysql_version" {
@@ -81,7 +81,7 @@ variable "admin_password" {
 variable "key_name" {
   type     = string
   nullable = true
-  default  = "master-key"
+  default  = "encryption-key"
 }
 
 variable "display_name" {

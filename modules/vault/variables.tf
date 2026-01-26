@@ -26,10 +26,15 @@ variable "keys" {
     time_of_schedule_start    = optional(string)
   }))
   default = {
-    "master-key" = {
+    "encryption-key" = {
       protection_mode     = "SOFTWARE"
-      key_shape_algorithm = "RSA"
-      key_shape_length    = "256"
+      key_shape_algorithm = "AES"
+      key_shape_length    = "32"
+    }
+    "signing-key" = {
+      protection_mode     = "SOFTWARE"
+      key_shape_algorithm = "ECDSA"
+      key_shape_length    = "32"
     }
   }
 }
