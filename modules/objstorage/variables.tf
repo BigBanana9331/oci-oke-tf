@@ -21,5 +21,5 @@ variable "buckets" {
 
 variable "tags" {
   type    = object({ freeformTags = map(string), definedTags = map(string) })
-  default = { "freeformTags" = {}, "definedTags" = { "CreatedBy" = "Terraform" } }
+  default = { "definedTags" = {}, "freeformTags" = { "CreatedBy" = "Terraform" } }
 }

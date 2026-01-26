@@ -22,3 +22,8 @@ variable "file_system_name" {
   type    = string
   default = "dev-filestorage"
 }
+
+variable "tags" {
+  type    = object({ freeformTags = map(string), definedTags = map(string) })
+  default = { "definedTags" = {}, "freeformTags" = { "CreatedBy" = "Terraform" } }
+}
