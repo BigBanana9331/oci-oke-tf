@@ -28,7 +28,7 @@ variable "nsg_names" {
 
 variable "shape_name" {
   type    = string
-  default = "MySQL.VM.Standard.E4.4.64GB"
+  default = "MySQL.VM.Standard.E4.1.8GB"
 }
 
 variable "mysql_version" {
@@ -78,17 +78,10 @@ variable "admin_password" {
     display_name = "HeatWave-DBSystem-admin-password"
   }
 }
-
-variable "key_generation_type" {
-  type     = string
-  nullable = true
-  default  = null
-}
-
 variable "key_name" {
   type     = string
   nullable = true
-  default  = null
+  default  = "master-key"
 }
 
 variable "display_name" {

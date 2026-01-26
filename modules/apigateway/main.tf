@@ -23,7 +23,7 @@ data "oci_core_network_security_groups" "network_security_groups" {
   vcn_id         = data.oci_core_vcns.vcns.virtual_networks[0].id
 }
 
-resource "oci_apigateway_gateway" "test_gateway" {
+resource "oci_apigateway_gateway" "gateway" {
   #Required
   compartment_id = var.compartment_id
   display_name   = var.gateway_name

@@ -31,11 +31,6 @@ variable "keys" {
       key_shape_algorithm = "RSA"
       key_shape_length    = "256"
     }
-    "tuntas-key" = {
-      protection_mode     = "SOFTWARE"
-      key_shape_algorithm = "RSA"
-      key_shape_length    = "256"
-    }
   }
 }
 

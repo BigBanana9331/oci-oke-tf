@@ -37,3 +37,8 @@ variable "max_session_ttl_in_seconds" {
   type    = number
   default = 3600
 }
+
+variable "client_cidr_block_allow_list" {
+  type = list(string)
+  default = [ "0.0.0.0/0" ]
+}

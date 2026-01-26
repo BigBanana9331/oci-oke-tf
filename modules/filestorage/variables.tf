@@ -15,7 +15,7 @@ variable "vault_name" {
 variable "key_name" {
   type     = string
   nullable = true
-  default  = "tuntas-key"
+  default  = "master-key"
 }
 
 variable "file_system_name" {

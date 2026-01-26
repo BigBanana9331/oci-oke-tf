@@ -23,7 +23,7 @@ variable "vault_name" {
 
 variable "key_name" {
   type    = string
-  default = "tuntas-key"
+  default = "master-key"
 }
 
 variable "cluster_name" {

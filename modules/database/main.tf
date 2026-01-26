@@ -92,13 +92,13 @@ resource "oci_mysql_mysql_db_system" "mysql_db_system" {
   admin_username          = var.admin_username
   admin_password          = random_password.password.result
 
-  dynamic "encrypt_data" {
-    for_each = var.key_generation_type != null ? [1] : []
-    content {
-      key_generation_type = var.key_generation_type
-      key_id              = [for key in data.oci_kms_keys.keys.keys : key.id if key.display_name == var.key_name][0]
-    }
-  }
+  # dynamic "encrypt_data" {
+  #   for_each = var.key_generation_type != null ? [1] : []
+  #   content {
+  #     key_generation_type = var.key_generation_type
+  #     key_id              = [for key in data.oci_kms_keys.keys.keys : key.id if key.display_name == var.key_name][0]
+  #   }
+  # }
 
   dynamic "database_console" {
     for_each = var.database_console != null ? [1] : []
