@@ -339,23 +339,23 @@ resource "oci_core_subnet" "subnets" {
   }
 }
 
-resource "oci_resourcemanager_private_endpoint" "private_endpoint" {
-  compartment_id = var.compartment_id
-  vcn_id         = oci_core_vcn.vcn.id
-  subnet_id      = var.private_endpoint.subnet_name
-  display_name   = var.private_endpoint.name
-  description    = var.private_endpoint.description
-  nsg_id_list    = [for nsg in var.private_endpoint.nsg_id_list : local.nsgs[nsg]]
+# resource "oci_resourcemanager_private_endpoint" "private_endpoint" {
+#   compartment_id = var.compartment_id
+#   vcn_id         = oci_core_vcn.vcn.id
+#   subnet_id      = var.private_endpoint.subnet_name
+#   display_name   = var.private_endpoint.name
+#   description    = var.private_endpoint.description
+#   nsg_id_list    = [for nsg in var.private_endpoint.nsg_id_list : local.nsgs[nsg]]
 
-  dns_zones                                  = var.private_endpoint.dns_zones
-  is_used_with_configuration_source_provider = var.private_endpoint.is_used_with_configuration_source_provider
-  security_attributes                        = var.private_endpoint.security_attributes
+#   dns_zones                                  = var.private_endpoint.dns_zones
+#   is_used_with_configuration_source_provider = var.private_endpoint.is_used_with_configuration_source_provider
+#   security_attributes                        = var.private_endpoint.security_attributes
 
-  # tags
-  defined_tags  = var.tags.definedTags
-  freeform_tags = var.tags.freeformTags
+#   # tags
+#   defined_tags  = var.tags.definedTags
+#   freeform_tags = var.tags.freeformTags
 
-  lifecycle {
-    ignore_changes = [defined_tags, freeform_tags]
-  }
-}
+#   lifecycle {
+#     ignore_changes = [defined_tags, freeform_tags]
+#   }
+# }

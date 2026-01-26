@@ -2,17 +2,17 @@ variable "compartment_id" {
   type = string
 }
 
-variable "vault_name" {
-  type     = string
-  nullable = true
-  default  = "dev-vault"
-}
+# variable "vault_name" {
+#   type     = string
+#   nullable = true
+#   default  = "dev-vault"
+# }
 
-variable "key_name" {
-  type     = string
-  nullable = true
-  default  = "tuntas-key"
-}
+# variable "key_name" {
+#   type     = string
+#   nullable = true
+#   default  = null
+# }
 
 variable "buckets" {
   type    = set(string)
