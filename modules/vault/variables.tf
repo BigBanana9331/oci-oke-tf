@@ -1,8 +1,10 @@
-variable "compartment_id" {}
+variable "compartment_id" {
+  type = string
+}
 
 variable "vault_name" {
   type    = string
-  default = "tf-vault-0"
+  default = "dev-vault"
 }
 
 variable "vault_type" {
@@ -29,7 +31,7 @@ variable "keys" {
       key_shape_algorithm = "RSA"
       key_shape_length    = "256"
     }
-    "oke-key" = {
+    "tuntas-key" = {
       protection_mode     = "SOFTWARE"
       key_shape_algorithm = "RSA"
       key_shape_length    = "256"
@@ -37,18 +39,7 @@ variable "keys" {
   }
 }
 
-variable "defined_tags" {
-  type = map(string)
-  default = {
-    "AutoTagging.AppName"   = "Tuntas"
-    "AutoTagging.CreatedBy" = "Terraform"
-  }
-}
-
-variable "freeform_tags" {
-  type = map(string)
-  default = {
-    "CreatedBy" = "Terraform"
-    "ManagedBy" = "InfraTeam"
-  }
+variable "tags" {
+  type    = object({ freeformTags = map(string), definedTags = map(string) })
+  default = { "freeformTags" = {}, "definedTags" = { "CreatedBy" = "Terraform" } }
 }

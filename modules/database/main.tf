@@ -1,3 +1,19 @@
+terraform {
+  required_version = ">= 1.5.7"
+  required_providers {
+    oci = {
+      source  = "oracle/oci"
+      version = "7.30.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "3.8.0"
+    }
+  }
+}
+
+
+
 data "oci_identity_availability_domains" "availability_domains" {
   compartment_id = var.tenancy_ocid
 }
@@ -42,12 +58,19 @@ resource "oci_vault_secret" "admin_password" {
   secret_name    = var.admin_password.display_name
   description    = var.admin_password.description
   metadata       = var.admin_password.metadata
-  defined_tags   = var.defined_tags
+
   secret_content {
     content      = base64encode(random_password.password.result)
     content_type = var.admin_password.content_type
     name         = var.admin_password.name
     stage        = var.admin_password.stage
+  }
+  # tags
+  defined_tags  = var.tags.definedTags
+  freeform_tags = var.tags.freeformTags
+
+  lifecycle {
+    ignore_changes = [defined_tags, freeform_tags]
   }
 }
 
@@ -68,8 +91,6 @@ resource "oci_mysql_mysql_db_system" "mysql_db_system" {
   database_management     = var.database_management
   admin_username          = var.admin_username
   admin_password          = random_password.password.result
-  defined_tags            = var.defined_tags
-
 
   dynamic "encrypt_data" {
     for_each = var.key_generation_type != null ? [1] : []
@@ -100,5 +121,13 @@ resource "oci_mysql_mysql_db_system" "mysql_db_system" {
 
   maintenance {
     window_start_time = var.maintenance_window_start_time
+  }
+
+  # tags
+  defined_tags  = var.tags.definedTags
+  freeform_tags = var.tags.freeformTags
+
+  lifecycle {
+    ignore_changes = [defined_tags, freeform_tags]
   }
 }

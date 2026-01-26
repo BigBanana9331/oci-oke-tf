@@ -1,3 +1,13 @@
+terraform {
+  required_version = ">= 1.5.7"
+  required_providers {
+    oci = {
+      source  = "oracle/oci"
+      version = "7.30.0"
+    }
+  }
+}
+
 data "oci_identity_availability_domains" "availability_domains" {
   compartment_id = var.tenancy_ocid
 }
@@ -43,7 +53,6 @@ locals {
     for source in data.oci_containerengine_node_pool_option.node_pool_option.sources :
     source.image_id if strcontains(source.source_name, "Gen2-GPU") == false
   ][0]
-  test = data.oci_identity_compartment.compartment.name
 }
 
 resource "oci_containerengine_cluster" "cluster" {
@@ -53,8 +62,6 @@ resource "oci_containerengine_cluster" "cluster" {
   type               = var.cluster_type
   kubernetes_version = var.kubernetes_version
   kms_key_id         = [for key in data.oci_kms_keys.keys.keys : key.id if key.display_name == var.key_name][0]
-  # defined_tags       = var.defined_tags
-  freeform_tags = var.freeform_tags
 
   endpoint_config {
     subnet_id            = [for subnet in data.oci_core_subnets.subnets.subnets : subnet.id if subnet.display_name == var.cluster_subnet_name][0]
@@ -108,6 +115,14 @@ resource "oci_containerengine_cluster" "cluster" {
       }
     }
   }
+
+  # tags
+  defined_tags  = var.tags.definedTags
+  freeform_tags = var.tags.freeformTags
+
+  lifecycle {
+    ignore_changes = [defined_tags, freeform_tags]
+  }
 }
 
 
@@ -116,7 +131,6 @@ resource "oci_identity_policy" "policy" {
   compartment_id = var.compartment_id
   description    = "policy created by terraform"
   name           = "oke-policy"
-  freeform_tags  = var.freeform_tags
 
   statements = [
     "Allow any-user to manage load-balancers in compartment ${data.oci_identity_compartment.compartment.name} where all {request.principal.type = 'workload', request.principal.namespace = 'native-ingress-controller-system', request.principal.service_account = 'oci-native-ingress-controller', request.principal.cluster_id = '${oci_containerengine_cluster.cluster.id}'}",
@@ -143,6 +157,14 @@ resource "oci_identity_policy" "policy" {
     "Allow any-user to inspect compartments in compartment ${data.oci_identity_compartment.compartment.name} where ALL {request.principal.type='workload', request.principal.namespace ='kube-system', request.principal.service_account = 'cluster-autoscaler', request.principal.cluster_id = '${oci_containerengine_cluster.cluster.id}'}"
   ]
 
+  # tags
+  defined_tags  = var.tags.definedTags
+  freeform_tags = var.tags.freeformTags
+
+  lifecycle {
+    ignore_changes = [defined_tags, freeform_tags]
+  }
+
   depends_on = [oci_containerengine_cluster.cluster]
 }
 
@@ -159,7 +181,6 @@ resource "oci_containerengine_addon" "metric_server_addon" {
 
   depends_on = [oci_containerengine_addon.cert_manager_addon]
 }
-
 
 resource "oci_containerengine_addon" "ingress_controller_addon" {
   addon_name                       = "NativeIngressController"
@@ -192,8 +213,6 @@ resource "oci_containerengine_node_pool" "node_pool" {
   compartment_id     = var.compartment_id
   kubernetes_version = var.kubernetes_version
   node_shape         = each.value.node_shape
-  # defined_tags       = var.defined_tags
-  freeform_tags = var.freeform_tags
 
   node_shape_config {
     memory_in_gbs = each.value.node_shape_memory_in_gbs
@@ -236,25 +255,33 @@ resource "oci_containerengine_node_pool" "node_pool" {
     image_id    = local.image_id
     source_type = each.value.source_type
   }
+
+  # tags
+  defined_tags  = var.tags.definedTags
+  freeform_tags = var.tags.freeformTags
+
+  lifecycle {
+    ignore_changes = [defined_tags, freeform_tags]
+  }
 }
 
 
 
-resource "oci_containerengine_addon" "auto_scaler_addon" {
-  addon_name                       = "ClusterAutoscaler"
-  cluster_id                       = oci_containerengine_cluster.cluster.id
-  remove_addon_resources_on_delete = true
+# resource "oci_containerengine_addon" "auto_scaler_addon" {
+#   addon_name                       = "ClusterAutoscaler"
+#   cluster_id                       = oci_containerengine_cluster.cluster.id
+#   remove_addon_resources_on_delete = true
 
-  configurations {
-    key   = "authType"
-    value = "workload"
-  }
+#   configurations {
+#     key   = "authType"
+#     value = "workload"
+#   }
 
-  configurations {
-    key = "nodes"
-    # value = "2:4:ocid1.nodepool.oc1.iad.aaaaaaaaae____ydq, 1:5:ocid1.nodepool.oc1.iad.aaaaaaaaah____bzr"
-    value = join(", ", formatlist("1:2:%s", [for nodepool in oci_containerengine_node_pool.node_pool : nodepool.id]))
-  }
+#   configurations {
+#     key = "nodes"
+#     # value = "2:4:ocid1.nodepool.oc1.iad.aaaaaaaaae____ydq, 1:5:ocid1.nodepool.oc1.iad.aaaaaaaaah____bzr"
+#     value = join(", ", formatlist("1:2:%s", [for nodepool in oci_containerengine_node_pool.node_pool : nodepool.id]))
+#   }
 
-  depends_on = [oci_containerengine_node_pool.node_pool]
-}
+#   depends_on = [oci_containerengine_node_pool.node_pool]
+# }

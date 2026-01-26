@@ -1,19 +1,11 @@
-variable "compartment_id" {}
-
-variable "freeform_tags" {
-  type = map(string)
-  default = {
-    "CreatedBy" = "Terraform"
-    "ManagedBy" = "InfraTeam"
-  }
+variable "compartment_id" {
+  type = string
 }
 
-# variable "defined_tags" {
-#   type = map(string)
-#   default = {
-#     "AutoTagging.CreatedBy" = "Terraform"
-#   }
-# }
+variable "tags" {
+  type    = object({ freeformTags = map(string), definedTags = map(string) })
+  default = { "freeformTags" = {}, "definedTags" = { "CreatedBy" = "Terraform" } }
+}
 
 variable "vcn_cidr_blocks" {
   type    = list(string)
@@ -22,17 +14,17 @@ variable "vcn_cidr_blocks" {
 
 variable "vcn_name" {
   type    = string
-  default = "tf-acme-dev-vcn"
+  default = "dev-vcn"
 }
 
 variable "nat_gateway_name" {
   type    = string
-  default = "nat-gateway-0"
+  default = "dev-ng"
 }
 
 variable "service_gateway_name" {
   type    = string
-  default = "service-gateway-0"
+  default = "dev-sg"
 }
 
 variable "dhcp_options_name" {
@@ -169,28 +161,38 @@ variable "subnets" {
     security_list_names        = optional(list(string))
   }))
   default = {
-    "controlplane" = {
+    "dev-subnet-oke-apiendpoint " = {
       cidr_block          = "10.0.0.0/30"
       route_table_name    = "routetable-default"
       security_list_names = ["seclist-default"]
     },
-    "workernodes" = {
+    "dev-subnet-oke-workernode " = {
       cidr_block          = "10.0.1.0/24"
       route_table_name    = "routetable-default"
       security_list_names = ["seclist-default"]
     },
-    "loadbalancers" = {
+    "dev-subnet-oke-serviceloadbalancer" = {
       cidr_block          = "10.0.2.0/24"
       route_table_name    = "routetable-default"
       security_list_names = ["seclist-default"]
     },
-    "bastion" = {
+    "dev-subnet-bastion" = {
       cidr_block          = "10.0.3.0/24"
       route_table_name    = "routetable-default"
       security_list_names = ["seclist-default"]
     },
-    "database" = {
+    "dev-subnet-mysql" = {
       cidr_block          = "10.0.4.0/24"
+      route_table_name    = "routetable-default"
+      security_list_names = ["seclist-default"]
+    },
+    "dev-subnet-apigateway" = {
+      cidr_block          = "10.0.5.0/24"
+      route_table_name    = "routetable-default"
+      security_list_names = ["seclist-default"]
+    },
+    "dev-subnet-privateendpoint" = {
+      cidr_block          = "10.0.6.0/24"
       route_table_name    = "routetable-default"
       security_list_names = ["seclist-default"]
     }
@@ -237,9 +239,8 @@ variable "nsgs" {
   })))
 
   nullable = true
-  # default = null
   default = {
-    "nsg-bastion" = [
+    "dev-nsg-bastion" = [
       {
         direction        = "EGRESS"
         protocol         = "6"
@@ -265,9 +266,16 @@ variable "nsgs" {
             max = 22
           }
         }
-      }
+      },
+      {
+        direction        = "EGRESS"
+        protocol         = "6"
+        destination_type = "SERVICE_CIDR_BLOCK"
+        destination      = "all-sin-services-in-oracle-services-network"
+        description      = "Allow bastion to communicate with OCI services"
+      },
     ]
-    "nsg-loadbalancers" = [
+    "dev-nsg-oke-serviceloadbalancer" = [
       {
         direction        = "EGRESS"
         protocol         = "6"
@@ -293,9 +301,16 @@ variable "nsgs" {
             max = 12256
           }
         }
+      },
+      {
+        direction   = "INGRESS"
+        protocol    = "6"
+        source_type = "CIDR_BLOCK"
+        source      = "10.0.0.0/16"
+        description = "Allow all ingress from VCN. Enhanced later"
       }
     ]
-    "nsg-workernodes" = [
+    "dev-nsg-oke-workernode" = [
       {
         direction   = "INGRESS"
         protocol    = "6"
@@ -387,7 +402,7 @@ variable "nsgs" {
         }
       }
     ]
-    "nsg-controlplane" = [
+    "dev-nsg-oke-apiendpoint" = [
       {
         direction   = "INGRESS"
         protocol    = "6"
@@ -477,7 +492,7 @@ variable "nsgs" {
         }
       }
     ]
-    "nsg-dbs" = [
+    "dev-nsg-mysql" = [
       {
         direction   = "INGRESS"
         protocol    = "6"
@@ -510,5 +525,88 @@ variable "nsgs" {
         description      = "Allow nodes to communicate with OCI services"
       },
     ]
+    "dev-nsg-privateendpoint" = [
+      {
+        direction        = "EGRESS"
+        protocol         = "6"
+        destination_type = "CIDR_BLOCK"
+        destination      = "10.0.0.0/30"
+        description      = "Allow pe to Kubernetes API endpoint communication."
+        tcp_options = {
+          destination_port_range = {
+            min = 6443
+            max = 6443
+          }
+        }
+      },
+      {
+        direction        = "EGRESS"
+        protocol         = "6"
+        destination_type = "CIDR_BLOCK"
+        destination      = "10.0.1.0/24"
+        description      = "Allow pe to worker nodes communication."
+        tcp_options = {
+          destination_port_range = {
+            min = 22
+            max = 22
+          }
+        }
+      },
+      {
+        direction        = "EGRESS"
+        protocol         = "6"
+        destination_type = "SERVICE_CIDR_BLOCK"
+        destination      = "all-sin-services-in-oracle-services-network"
+        description      = "Allow pe to communicate with OCI services"
+      }
+    ]
+    "dev-nsg-apigateway" = [
+      {
+        direction        = "EGRESS"
+        protocol         = "6"
+        destination_type = "CIDR_BLOCK"
+        destination      = "10.0.2.0/24"
+        description      = "Allow traffic to worker nodes."
+        tcp_options = {
+          destination_port_range = {
+            min = 443
+            max = 443
+          }
+        }
+      },
+      {
+        direction   = "INGRESS"
+        protocol    = "6"
+        source_type = "CIDR_BLOCK"
+        source      = "10.0.0.0/16"
+        description = "Allow all ingress from VCN. Enhanced later"
+        tcp_options = {
+          destination_port_range = {
+            min = 443
+            max = 443
+          }
+        }
+      }
+    ]
   }
 }
+
+
+variable "private_endpoint" {
+  type = object({
+    subnet_name                                = string
+    name                                       = string
+    description                                = optional(string)
+    nsg_id_list                                = optional(list(string))
+    dns_zones                                  = optional(list(string))
+    is_used_with_configuration_source_provider = optional(bool)
+    security_attributes                        = optional(map(string))
+  })
+
+  default = {
+    name        = "dev-rms-pe"
+    subnet_name = "dev-subnet-privateendpoint"
+    nsg_id_list = ["dev-nsg-privateendpoint"]
+  }
+}
+

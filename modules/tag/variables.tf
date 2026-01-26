@@ -1,4 +1,6 @@
-variable "compartment_id" {}
+variable "compartment_id" {
+  type = string
+}
 
 variable "namespace" {
   type = object({
@@ -13,23 +15,17 @@ variable "namespace" {
   })
 
   default = {
-    name        = "AutoTagging"
+    name        = "Governance"
     description = "Automation tag namespace when create resource"
     tags = {
       "AppName" = {
         description = "Managed Application Name"
       }
-      "CreatedBy" = {
-        description = "Which create reources"
-      }
     }
   }
 }
 
-variable "freeform_tags" {
-  type = map(string)
-  default = {
-    "CreatedBy" = "Terraform"
-    "ManagedBy" = "InfraTeam"
-  }
+variable "tags" {
+  type    = object({ freeformTags = map(string), definedTags = map(string) })
+  default = { "freeformTags" = {}, "definedTags" = { "CreatedBy" = "Terraform" } }
 }

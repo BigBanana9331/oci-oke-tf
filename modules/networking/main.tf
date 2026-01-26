@@ -1,3 +1,14 @@
+terraform {
+  required_version = ">= 1.5.7"
+  required_providers {
+    oci = {
+      source  = "oracle/oci"
+      version = "7.30.0"
+    }
+  }
+}
+
+
 data "oci_core_services" "services" {}
 
 locals {
@@ -51,39 +62,64 @@ resource "oci_core_vcn" "vcn" {
   compartment_id = var.compartment_id
   cidr_blocks    = var.vcn_cidr_blocks
   display_name   = var.vcn_name
-  freeform_tags  = var.freeform_tags
-  # defined_tags   = var.defined_tags
+
+  # tags
+  defined_tags  = var.tags.definedTags
+  freeform_tags = var.tags.freeformTags
+
+  lifecycle {
+    ignore_changes = [defined_tags, freeform_tags]
+  }
 }
 
 resource "oci_core_dhcp_options" "dhcp_options" {
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
   display_name   = var.dhcp_options_name
-  freeform_tags  = var.freeform_tags
+
   options {
     type        = var.dhcp_options_type
     server_type = var.dhcp_options_server_type
   }
-  # defined_tags = var.defined_tags
+
+  # tags
+  defined_tags  = var.tags.definedTags
+  freeform_tags = var.tags.freeformTags
+
+  lifecycle {
+    ignore_changes = [defined_tags, freeform_tags]
+  }
 }
 
 resource "oci_core_nat_gateway" "nat_gateway" {
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
   display_name   = var.nat_gateway_name
-  freeform_tags  = var.freeform_tags
-  # defined_tags   = var.defined_tags
+
+  # tags
+  defined_tags  = var.tags.definedTags
+  freeform_tags = var.tags.freeformTags
+
+  lifecycle {
+    ignore_changes = [defined_tags, freeform_tags]
+  }
 }
 
 resource "oci_core_service_gateway" "service_gateway" {
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
   display_name   = var.service_gateway_name
-  freeform_tags  = var.freeform_tags
-  # defined_tags   = var.defined_tags
 
   services {
     service_id = data.oci_core_services.services.services[0].id
+  }
+
+  # tags
+  defined_tags  = var.tags.definedTags
+  freeform_tags = var.tags.freeformTags
+
+  lifecycle {
+    ignore_changes = [defined_tags, freeform_tags]
   }
 }
 
@@ -93,8 +129,6 @@ resource "oci_core_security_list" "security_lists" {
   display_name   = each.key
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
-  freeform_tags  = var.freeform_tags
-  # defined_tags   = var.defined_tags
 
   dynamic "egress_security_rules" {
     for_each = each.value.egress_security_rules == null ? [] : each.value.egress_security_rules
@@ -166,56 +200,29 @@ resource "oci_core_security_list" "security_lists" {
       }
     }
   }
-}
 
-resource "oci_core_route_table" "route_tables" {
-  for_each = var.route_tables != null ? var.route_tables : {}
+  # tags
+  defined_tags  = var.tags.definedTags
+  freeform_tags = var.tags.freeformTags
 
-  display_name   = each.key
-  compartment_id = var.compartment_id
-  vcn_id         = oci_core_vcn.vcn.id
-  freeform_tags  = var.freeform_tags
-  # defined_tags   = var.defined_tags
-  dynamic "route_rules" {
-    for_each = each.value != null ? each.value : []
-    content {
-      network_entity_id = local.network_entity_ids[route_rules.value.network_entity_name]
-      description       = route_rules.value.description
-      destination       = route_rules.value.destination
-      destination_type  = route_rules.value.destination_type
-    }
+  lifecycle {
+    ignore_changes = [defined_tags, freeform_tags]
   }
-
-  depends_on = [
-    oci_core_nat_gateway.nat_gateway,
-    oci_core_service_gateway.service_gateway
-  ]
-}
-
-resource "oci_core_subnet" "subnets" {
-  for_each = var.subnets != null ? var.subnets : {}
-
-  display_name               = each.key
-  compartment_id             = var.compartment_id
-  vcn_id                     = oci_core_vcn.vcn.id
-  cidr_block                 = each.value.cidr_block
-  prohibit_internet_ingress  = each.value.prohibit_internet_ingress
-  prohibit_public_ip_on_vnic = each.value.prohibit_public_ip_on_vnic
-  dhcp_options_id            = oci_core_dhcp_options.dhcp_options.id
-  route_table_id             = local.route_tables[each.value.route_table_name]
-  security_list_ids          = [for sl in each.value.security_list_names : local.seclists[sl]]
-  freeform_tags              = var.freeform_tags
-  # defined_tags              = var.defined_tags
 }
 
 resource "oci_core_network_security_group" "network_security_groups" {
-  #Required
   for_each       = var.nsgs != null ? var.nsgs : {}
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
   display_name   = each.key
-  freeform_tags  = var.freeform_tags
-  # defined_tags   = var.defined_tags
+
+  # tags
+  defined_tags  = var.tags.definedTags
+  freeform_tags = var.tags.freeformTags
+
+  lifecycle {
+    ignore_changes = [defined_tags, freeform_tags]
+  }
 }
 
 resource "oci_core_network_security_group_security_rule" "network_security_group_security_rule" {
@@ -276,5 +283,79 @@ resource "oci_core_network_security_group_security_rule" "network_security_group
         }
       }
     }
+  }
+}
+
+resource "oci_core_route_table" "route_tables" {
+  for_each = var.route_tables != null ? var.route_tables : {}
+
+  display_name   = each.key
+  compartment_id = var.compartment_id
+  vcn_id         = oci_core_vcn.vcn.id
+
+  dynamic "route_rules" {
+    for_each = each.value != null ? each.value : []
+    content {
+      network_entity_id = local.network_entity_ids[route_rules.value.network_entity_name]
+      description       = route_rules.value.description
+      destination       = route_rules.value.destination
+      destination_type  = route_rules.value.destination_type
+    }
+  }
+
+  # tags
+  defined_tags  = var.tags.definedTags
+  freeform_tags = var.tags.freeformTags
+
+  lifecycle {
+    ignore_changes = [defined_tags, freeform_tags]
+  }
+
+  depends_on = [
+    oci_core_nat_gateway.nat_gateway,
+    oci_core_service_gateway.service_gateway
+  ]
+}
+
+resource "oci_core_subnet" "subnets" {
+  for_each = var.subnets != null ? var.subnets : {}
+
+  display_name               = each.key
+  compartment_id             = var.compartment_id
+  vcn_id                     = oci_core_vcn.vcn.id
+  cidr_block                 = each.value.cidr_block
+  prohibit_internet_ingress  = each.value.prohibit_internet_ingress
+  prohibit_public_ip_on_vnic = each.value.prohibit_public_ip_on_vnic
+  dhcp_options_id            = oci_core_dhcp_options.dhcp_options.id
+  route_table_id             = local.route_tables[each.value.route_table_name]
+  security_list_ids          = [for sl in each.value.security_list_names : local.seclists[sl]]
+
+  # tags
+  defined_tags  = var.tags.definedTags
+  freeform_tags = var.tags.freeformTags
+
+  lifecycle {
+    ignore_changes = [defined_tags, freeform_tags]
+  }
+}
+
+resource "oci_resourcemanager_private_endpoint" "private_endpoint" {
+  compartment_id = var.compartment_id
+  vcn_id         = oci_core_vcn.vcn.id
+  subnet_id      = var.private_endpoint.subnet_name
+  display_name   = var.private_endpoint.name
+  description    = var.private_endpoint.description
+  nsg_id_list    = [for nsg in var.private_endpoint.nsg_id_list : local.nsgs[nsg]]
+
+  dns_zones                                  = var.private_endpoint.dns_zones
+  is_used_with_configuration_source_provider = var.private_endpoint.is_used_with_configuration_source_provider
+  security_attributes                        = var.private_endpoint.security_attributes
+
+  # tags
+  defined_tags  = var.tags.definedTags
+  freeform_tags = var.tags.freeformTags
+
+  lifecycle {
+    ignore_changes = [defined_tags, freeform_tags]
   }
 }

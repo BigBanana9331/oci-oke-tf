@@ -1,33 +1,34 @@
-variable "tenancy_ocid" {}
+variable "tenancy_ocid" {
+  type = string
+}
 
-variable "compartment_id" {}
+variable "compartment_id" {
+  type = string
+}
 
-variable "freeform_tags" {
-  type = map(string)
-  default = {
-    "CreatedBy" = "Terraform"
-    "ManagedBy" = "InfraTeam"
-  }
+variable "tags" {
+  type    = object({ freeformTags = map(string), definedTags = map(string) })
+  default = { "freeformTags" = {}, "definedTags" = { "CreatedBy" = "Terraform" } }
 }
 
 variable "vcn_name" {
   type    = string
-  default = "tf-acme-dev-vcn"
+  default = "dev-vcn"
 }
 
 variable "vault_name" {
   type    = string
-  default = "tf-vault-0"
+  default = "dev-vault"
 }
 
 variable "key_name" {
   type    = string
-  default = "oke-key"
+  default = "tuntas-key"
 }
 
 variable "cluster_name" {
   type    = string
-  default = "tf-oke-0"
+  default = "dev-oke"
 }
 
 variable "cluster_type" {
@@ -57,13 +58,13 @@ variable "node_pool_os_type" {
 
 variable "cluster_subnet_name" {
   type    = string
-  default = "controlplane"
+  default = "dev-subnet-oke-apiendpoint"
 }
 
 variable "endpoint_nsg_names" {
   type     = set(string)
   nullable = true
-  default  = ["nsg-controlplane"]
+  default  = ["dev-nsg-privateendpoint"]
 }
 
 variable "cni_type" {
@@ -83,12 +84,12 @@ variable "is_pod_security_policy_enabled" {
 
 variable "loadbalancer_subnet_name" {
   type    = string
-  default = "loadbalancers"
+  default = "dev-subnet-oke-serviceloadbalancer"
 }
 
 variable "worker_subnet_name" {
   type    = string
-  default = "workernodes"
+  default = "dev-subnet-oke-workernode"
 }
 
 variable "services_cidr" {
@@ -185,16 +186,8 @@ variable "node_pools" {
       node_shape_memory_in_gbs = 8
       node_pool_size           = 1
       cni_type                 = "FLANNEL_OVERLAY"
-      node_nsg_names           = ["nsg-workernodes"]
+      node_nsg_names           = ["dev-nsg-oke-workernode"]
     }
-  }
-}
-
-variable "defined_tags" {
-  type = map(string)
-  default = {
-    "AutoTagging.AppName"   = "Tuntas"
-    "AutoTagging.CreatedBy" = "Terraform"
   }
 }
 

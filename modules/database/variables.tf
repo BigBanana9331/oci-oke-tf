@@ -1,28 +1,29 @@
-variable "tenancy_ocid" {}
+variable "tenancy_ocid" {
+  type = string
+}
 
-variable "compartment_id" {}
+variable "compartment_id" {
+  type = string
+}
 
-variable "freeform_tags" {
-  type = map(string)
-  default = {
-    "CreatedBy" = "Terraform"
-    "ManagedBy" = "InfraTeam"
-  }
+variable "tags" {
+  type    = object({ freeformTags = map(string), definedTags = map(string) })
+  default = { "freeformTags" = {}, "definedTags" = { "CreatedBy" = "Terraform" } }
 }
 
 variable "vcn_name" {
   type    = string
-  default = "tf-acme-dev-vcn"
+  default = "dev-vcn"
 }
 
 variable "subnet_name" {
   type    = string
-  default = "database"
+  default = "dev-subnet-mysql"
 }
 
 variable "nsg_names" {
   type    = set(string)
-  default = ["nsg-dbs"]
+  default = ["dev-nsg-mysql"]
 }
 
 variable "shape_name" {
@@ -61,7 +62,7 @@ variable "admin_username" {
 
 variable "vault_name" {
   type    = string
-  default = "vault-0"
+  default = "dev-vault"
 }
 
 variable "admin_password" {
@@ -145,12 +146,4 @@ variable "database_console" {
   })
   default  = null
   nullable = true
-}
-
-variable "defined_tags" {
-  type = map(string)
-  default = {
-    "AutoTagging.AppName"   = "Tuntas"
-    "AutoTagging.CreatedBy" = "Terraform"
-  }
 }
