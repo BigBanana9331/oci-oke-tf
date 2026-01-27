@@ -8,6 +8,11 @@ terraform {
   }
 }
 
+variable "tags" {
+  type    = object({ freeformTags = map(string), definedTags = map(string) })
+  default = { "definedTags" = {}, "freeformTags" = { "CreatedBy" = "Terraform" } }
+}
+
 variable "compartment_id" {
   type = string
 }
@@ -46,10 +51,10 @@ variable "keys" {
 
 variable "secrets" {
   type = map(object({
-    key_name               = optional(string, "encryption-key")
     description            = optional(string)
-    enable_auto_generation = optional(bool)
     metadata               = optional(map(string))
+    enable_auto_generation = optional(bool)
+    key_name               = optional(string, "encryption-key")
     generation_template    = optional(string)
     generation_type        = optional(string)
     passphrase_length      = optional(number)
@@ -57,19 +62,18 @@ variable "secrets" {
   }))
   default = {
     "dev-mysql-admin-password" = {
-
-      generation_template = "DBAAS_DEFAULT_PASSWORD"
-      generation_type     = "PASSPHRASE"
-      passphrase_length   = 32
+      description            = "MySQL admin password"
+      enable_auto_generation = true
+      generation_template    = "DBAAS_DEFAULT_PASSWORD"
+      generation_type        = "PASSPHRASE"
+      passphrase_length      = 32
     }
     "dev-nodepool-ssh-key" = {
-      generation_template = "RSA_2048"
-      generation_type     = "SSH_KEY"
+      description            = "Nodepool instnaces SSH key"
+      enable_auto_generation = true
+      generation_template    = "RSA_2048"
+      generation_type        = "SSH_KEY"
     }
   }
 }
 
-variable "tags" {
-  type    = object({ freeformTags = map(string), definedTags = map(string) })
-  default = { "definedTags" = {}, "freeformTags" = { "CreatedBy" = "Terraform" } }
-}

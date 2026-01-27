@@ -32,6 +32,12 @@ module "networking" {
   depends_on     = [module.tag]
 }
 
+module "artifact" {
+  source         = "./modules/artifact"
+  compartment_id = var.compartment_ocid
+  depends_on     = [module.tag]
+}
+
 module "queue" {
   source         = "./modules/queue"
   compartment_id = var.compartment_ocid

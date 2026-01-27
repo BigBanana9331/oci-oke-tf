@@ -45,6 +45,7 @@ resource "oci_kms_key" "keys" {
   lifecycle {
     ignore_changes = [defined_tags, freeform_tags]
   }
+  depends_on = [oci_kms_vault.vault]
 }
 
 resource "oci_vault_secret" "secrets" {
@@ -75,4 +76,5 @@ resource "oci_vault_secret" "secrets" {
   lifecycle {
     ignore_changes = [defined_tags, freeform_tags]
   }
+  depends_on = [oci_kms_key.keys]
 }
