@@ -241,11 +241,11 @@ resource "oci_containerengine_node_pool" "node_pool" {
   compartment_id     = var.compartment_id
   kubernetes_version = var.kubernetes_version
   node_shape         = each.value.node_shape
-  ssh_public_key = ""
-  node_metadata = ""
-  
+  ssh_public_key     = ""
+  node_metadata      = ""
+
   initial_node_labels {
-    key = ""
+    key   = ""
     value = ""
   }
 
@@ -277,7 +277,7 @@ resource "oci_containerengine_node_pool" "node_pool" {
     [for nsg_name in each.value.node_nsg_names : nsg.id if nsg.display_name == nsg_name]])
 
     is_pv_encryption_in_transit_enabled = ""
-    kms_key_id = ""
+    kms_key_id                          = ""
 
     placement_configs {
       subnet_id           = [for subnet in data.oci_core_subnets.subnets.subnets : subnet.id if subnet.display_name == var.worker_subnet_name][0]
@@ -303,9 +303,9 @@ resource "oci_containerengine_node_pool" "node_pool" {
 
   lifecycle {
     ignore_changes = [
-      defined_tags, 
+      defined_tags,
       freeform_tags,
-      node_config_details.defined_tags, 
+      node_config_details.defined_tags,
       node_config_details.freeform_tags,
     ]
   }

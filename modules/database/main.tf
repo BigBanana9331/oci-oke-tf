@@ -70,8 +70,6 @@ resource "oci_identity_policy" "policy" {
   lifecycle {
     ignore_changes = [defined_tags, freeform_tags]
   }
-
-  depends_on = [oci_kms_key.master_keys]
 }
 
 
