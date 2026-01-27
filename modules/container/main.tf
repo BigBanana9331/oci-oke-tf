@@ -42,6 +42,17 @@ data "oci_kms_keys" "keys" {
   management_endpoint = [for vault in data.oci_kms_vaults.vaults.vaults : vault.management_endpoint if vault.display_name == var.vault_name][0]
 }
 
+data "oci_vault_secrets" "secrets" {
+  compartment_id = var.compartment_id
+  name           = var.ssh_secret_name
+  vault_id       = [for vault in data.oci_kms_vaults.vaults.vaults : vault.id if vault.display_name == var.vault_name][0]
+}
+
+
+data "oci_secrets_secretbundle" "secretbundle" {
+  secret_id = data.oci_vault_secrets.secrets.secrets[0].id
+}
+
 
 locals {
   image_id = [
@@ -241,12 +252,15 @@ resource "oci_containerengine_node_pool" "node_pool" {
   compartment_id     = var.compartment_id
   kubernetes_version = var.kubernetes_version
   node_shape         = each.value.node_shape
-  ssh_public_key     = ""
-  node_metadata      = ""
+  ssh_public_key     = base64decode(data.oci_secrets_secretbundle.secretbundle.secret_bundle_content[0].content)["publicKey"]
+  node_metadata      = each.value.node_metadata
 
-  initial_node_labels {
-    key   = ""
-    value = ""
+  dynamic "initial_node_labels" {
+    for_each = each.value.initial_node_labels != null ? each.value.initial_node_labels : []
+    content {
+      key   = initial_node_labels.key
+      value = initial_node_labels.value
+    }
   }
 
   node_shape_config {
@@ -273,11 +287,11 @@ resource "oci_containerengine_node_pool" "node_pool" {
   node_config_details {
     size = each.value.node_pool_size
 
+    is_pv_encryption_in_transit_enabled = each.value.is_pv_encryption_in_transit_enabled
+    kms_key_id                          = [for key in data.oci_kms_keys.keys.keys : key.id if key.display_name == each.value.key_name][0]
+
     nsg_ids = flatten([for nsg in data.oci_core_network_security_groups.network_security_groups.network_security_groups :
     [for nsg_name in each.value.node_nsg_names : nsg.id if nsg.display_name == nsg_name]])
-
-    is_pv_encryption_in_transit_enabled = ""
-    kms_key_id                          = ""
 
     placement_configs {
       subnet_id           = [for subnet in data.oci_core_subnets.subnets.subnets : subnet.id if subnet.display_name == var.worker_subnet_name][0]

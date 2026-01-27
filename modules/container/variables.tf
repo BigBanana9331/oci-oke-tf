@@ -66,6 +66,11 @@ variable "key_name" {
   default = "master-key"
 }
 
+variable "ssh_secret_name" {
+  type    = string
+  default = "dev-nodepool-ssh-key"
+}
+
 variable "cluster_name" {
   type    = string
   default = "dev-oke"
@@ -206,6 +211,10 @@ variable "node_pools" {
     node_shape                           = string
     node_pool_size                       = number
     cni_type                             = string
+    is_pv_encryption_in_transit_enabled  = optional(bool, null)
+    key_name                             = optional(string)
+    node_metadata                        = optional(map(string))
+    initial_node_labels                  = optional(map(string))
     node_shape_ocpus                     = optional(number, null)
     node_shape_memory_in_gbs             = optional(number, null)
     eviction_grace_duration              = optional(string, null)
@@ -219,14 +228,23 @@ variable "node_pools" {
     image_id                             = optional(string, "ocid1.image.oc1.ap-singapore-1.aaaaaaaa2a3rqme4763azdnhuj47wft43q5o236g7jbglkfhogprk44o2bta")
     source_type                          = optional(string, "IMAGE")
   }))
+
   default = {
     "pool-0" = {
-      node_shape               = "VM.Standard.E5.Flex"
-      node_shape_ocpus         = 1
-      node_shape_memory_in_gbs = 8
-      node_pool_size           = 1
-      cni_type                 = "FLANNEL_OVERLAY"
-      node_nsg_names           = ["dev-nsg-oke-workernode"]
+      node_shape                          = "VM.Standard.E5.Flex"
+      node_shape_ocpus                    = 1
+      node_shape_memory_in_gbs            = 8
+      node_pool_size                      = 1
+      cni_type                            = "FLANNEL_OVERLAY"
+      node_nsg_names                      = ["dev-nsg-oke-workernode"]
+      is_pv_encryption_in_transit_enabled = true
+      key_name                            = "encryption-key"
+      node_metadata = {
+        meta = "meta1"
+      }
+      initial_node_labels = {
+        label = "label1"
+      }
     }
   }
 }
