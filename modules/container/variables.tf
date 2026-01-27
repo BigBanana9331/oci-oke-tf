@@ -63,7 +63,7 @@ variable "vault_name" {
 
 variable "key_name" {
   type    = string
-  default = "master-key"
+  default = "encryption-key"
 }
 
 variable "ssh_secret_name" {
