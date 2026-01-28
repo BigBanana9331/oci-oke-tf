@@ -291,8 +291,8 @@ resource "oci_containerengine_node_pool" "node_pool" {
     # is_pv_encryption_in_transit_enabled = each.value.is_pv_encryption_in_transit_enabled
     # kms_key_id                          = [for key in data.oci_kms_keys.keys.keys : key.id if key.display_name == each.value.key_name][0]
 
-    # nsg_ids = flatten([for nsg in data.oci_core_network_security_groups.network_security_groups.network_security_groups :
-    # [for nsg_name in each.value.node_nsg_names : nsg.id if nsg.display_name == nsg_name]])
+    nsg_ids = flatten([for nsg in data.oci_core_network_security_groups.network_security_groups.network_security_groups :
+    [for nsg_name in each.value.node_nsg_names : nsg.id if nsg.display_name == nsg_name]])
 
     placement_configs {
       subnet_id           = [for subnet in data.oci_core_subnets.subnets.subnets : subnet.id if subnet.display_name == var.worker_subnet_name][0]
