@@ -49,7 +49,7 @@ resource "oci_identity_policy" "policy" {
   #Required
   compartment_id = var.compartment_id
   description    = "policy created by terraform"
-  name           = "${var.display_name}-policy"
+  name           = "dev-mysql-policy"
 
   statements = [
     "Allow any-user to use key-delegate in compartment ${data.oci_identity_compartment.compartment.name} where all {request.principal.type = 'mysqldbsystem', request.resource.compartment.id='${var.compartment_id}'}",
