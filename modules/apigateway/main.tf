@@ -14,7 +14,6 @@ data "oci_core_network_security_groups" "network_security_groups" {
 }
 
 resource "oci_apigateway_gateway" "gateway" {
-  #Required
   compartment_id = var.compartment_id
   display_name   = var.gateway_name
   endpoint_type  = var.endpoint_type
@@ -23,7 +22,6 @@ resource "oci_apigateway_gateway" "gateway" {
   network_security_group_ids = flatten([for nsg in data.oci_core_network_security_groups.network_security_groups.network_security_groups :
   [for nsg_name in var.nsg_names : nsg.id if nsg.display_name == nsg_name]])
 
-  # tags
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
 

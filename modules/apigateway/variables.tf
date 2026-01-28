@@ -8,13 +8,13 @@ terraform {
   }
 }
 
-variable "compartment_id" {
-  type = string
-}
-
 variable "tags" {
   type    = object({ freeformTags = map(string), definedTags = map(string) })
   default = { "definedTags" = {}, "freeformTags" = { "CreatedBy" = "Terraform" } }
+}
+
+variable "compartment_id" {
+  type = string
 }
 
 variable "vcn_name" {

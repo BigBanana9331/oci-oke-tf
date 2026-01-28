@@ -109,7 +109,7 @@ variable "cluster_subnet_name" {
 variable "endpoint_nsg_names" {
   type     = set(string)
   nullable = true
-  default  = ["dev-nsg-oke-apiendpoint "]
+  default  = ["dev-nsg-oke-apiendpoint"]
 }
 
 variable "cni_type" {

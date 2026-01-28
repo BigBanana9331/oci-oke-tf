@@ -399,17 +399,6 @@ variable "nsgs" {
       },
       {
         direction        = "EGRESS"
-        protocol         = "1"
-        destination_type = "CIDR_BLOCK"
-        destination      = "0.0.0.0/0"
-        description      = "Path Discovery."
-        icmp_options = {
-          type = 3
-          code = 4
-        }
-      },
-      {
-        direction        = "EGRESS"
         protocol         = "6"
         destination_type = "SERVICE_CIDR_BLOCK"
         destination      = "all-sin-services-in-oracle-services-network"
