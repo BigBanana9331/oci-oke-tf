@@ -1,0 +1,51 @@
+name: Terraform Apply
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: latest
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+      
+      - name: Terraform Init
+        run: terraform init
+        env:
+          TF_VAR_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
+          TF_VAR_compartment_ocid: ${{ secrets.OCI_COMPARTMENT_OCID }}
+          TF_VAR_region: ${{ secrets.OCI_REGION }}
+      
+      - name: Terraform Apply
+        run: terraform apply -var-file="dev.tfvars" -auto-approve
+        env:
+          TF_VAR_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
+          TF_VAR_compartment_ocid: ${{ secrets.OCI_COMPARTMENT_OCID }}
+          TF_VAR_region: ${{ secrets.OCI_REGION }}
+      
+      - name: Terraform Output
+        id: tf_output
+        run: terraform output -json > output.json
+        env:
+          TF_VAR_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
+          TF_VAR_compartment_ocid: ${{ secrets.OCI_COMPARTMENT_OCID }}
+          TF_VAR_region: ${{ secrets.OCI_REGION }}
+      
+      - name: Upload Terraform Output
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-output
+          path: output.json
+          retention-days: 7
