@@ -21,3 +21,7 @@ output "route_tables" {
 output "vcn_id" {
   value = oci_core_vcn.vcn.id
 }
+
+output "service_ib_subnet_id" {
+  value = local.subnets["dev-subnet-oke-serviceloadbalancer"]
+}

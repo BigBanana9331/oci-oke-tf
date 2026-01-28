@@ -4,7 +4,6 @@ variable "tenancy_ocid" {
 variable "compartment_ocid" {
   type = string
 }
-
 variable "region" {
   type = string
 }
@@ -86,3 +85,35 @@ module "database" {
   compartment_id = var.compartment_ocid
   depends_on     = [module.networking, module.vault]
 }
+
+
+# data "oci_containerengine_cluster_kube_config" "cluster_kube_config" {
+#   cluster_id = module.container.cluster_id
+#   depends_on = [module.container]
+# }
+
+# data "oci_resourcemanager_private_endpoint_reachable_ip" "private_endpoint_reachable_ip" {
+#   #Required
+#   private_endpoint_id = module.privateendpoint.id
+#   private_ip          = "10.0.0.2"
+#   depends_on          = [module.privateendpoint]
+# }
+
+# provider "kubernetes" {
+#   host                   = "https://${data.oci_resourcemanager_private_endpoint_reachable_ip.private_endpoint_reachable_ip.ip_address}:6443"
+#   cluster_ca_certificate = base64decode(yamldecode(data.oci_containerengine_cluster_kube_config.cluster_kube_config.content)["clusters"][0]["cluster"]["certificate-authority-data"])
+#   exec {
+#     api_version = "client.authentication.k8s.io/v1beta1"
+#     args = ["ce", "cluster", "generate-token", "--cluster-id",
+#     module.container.cluster_id, "--region", var.region]
+#     command = "oci"
+#   }
+# }
+
+# module "kubernetes" {
+#   source         = "./modules/kubernetes"
+#   compartment_id = var.compartment_ocid
+#   subnet_id      = module.networking.service_ib_subnet_id
+
+#   depends_on = [ module.container, module.privateendpoint ]
+# }
