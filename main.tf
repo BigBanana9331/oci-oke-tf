@@ -23,12 +23,12 @@ module "loggroup" {
   depends_on     = [module.tag]
 }
 
-module "vault" {
-  source         = "./modules/vault"
-  compartment_id = var.compartment_ocid
-  region         = var.region
-  depends_on     = [module.tag]
-}
+# module "vault" {
+#   source         = "./modules/vault"
+#   compartment_id = var.compartment_ocid
+#   region         = var.region
+#   depends_on     = [module.tag]
+# }
 
 module "networking" {
   source         = "./modules/networking"
@@ -42,17 +42,15 @@ module "artifact" {
   depends_on     = [module.tag]
 }
 
-module "queue" {
-  source         = "./modules/queue"
-  compartment_id = var.compartment_ocid
-  depends_on     = [module.vault]
-}
+# module "queue" {
+#   source         = "./modules/queue"
+#   compartment_id = var.compartment_ocid
+# }
 
-module "bucket" {
-  source         = "./modules/objstorage"
-  compartment_id = var.compartment_ocid
-  depends_on     = [module.vault]
-}
+# module "bucket" {
+#   source         = "./modules/objstorage"
+#   compartment_id = var.compartment_ocid
+# }
 
 module "bastion" {
   source         = "./modules/bastion"
@@ -76,7 +74,7 @@ module "container" {
   source         = "./modules/container"
   tenancy_ocid   = var.tenancy_ocid
   compartment_id = var.compartment_ocid
-  depends_on     = [module.networking, module.loggroup, module.vault]
+  depends_on     = [module.networking, module.loggroup]
 }
 
 # module "database" {
