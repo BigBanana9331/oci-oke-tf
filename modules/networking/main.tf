@@ -22,6 +22,7 @@ locals {
   ])
 
   network_entity_ids = {
+    natgw = oci_core_nat_gateway.nat_gateway[0].id
     svcgw = oci_core_service_gateway.service_gateway[0].id
   }
 
@@ -48,8 +49,8 @@ locals {
 
 resource "oci_core_vcn" "vcn" {
   compartment_id = var.compartment_id
-  cidr_blocks    = var.vcn.cidr_blocks
-  display_name   = join("-", [var.environment, var.app_name, var.vcn.name])
+  cidr_blocks    = var.cidr_blocks
+  display_name   = join("-", [var.environment, var.app_name, var.vcn_name])
 
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
@@ -68,6 +69,20 @@ resource "oci_core_service_gateway" "service_gateway" {
   services {
     service_id = data.oci_core_services.services.services[0].id
   }
+
+  defined_tags  = var.tags.definedTags
+  freeform_tags = var.tags.freeformTags
+
+  lifecycle {
+    ignore_changes = [defined_tags, freeform_tags]
+  }
+}
+
+resource "oci_core_nat_gateway" "nat_gateway" {
+  count          = var.service_gateway_name != null ? 1 : 0
+  compartment_id = var.compartment_id
+  vcn_id         = oci_core_vcn.vcn.id
+  display_name   = var.nat_gateway_name
 
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags

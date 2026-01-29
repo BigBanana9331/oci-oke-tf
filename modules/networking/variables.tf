@@ -25,21 +25,26 @@ variable "tags" {
   default = { "definedTags" = {}, "freeformTags" = { "CreatedBy" = "Terraform" } }
 }
 
-variable "vcn" {
-  type = object({
-    name        = string
-    cidr_blocks = list(string)
-  })
-  default = {
-    name        = "vcn-0"
-    cidr_blocks = ["10.0.0.0/16"]
-  }
+variable "vcn_name" {
+  type    = string
+  default = "vcn-0"
+}
+
+variable "cidr_blocks" {
+  type    = list(string)
+  default = ["10.0.0.0/16"]
 }
 
 variable "service_gateway_name" {
   type     = string
   nullable = true
   default  = "sg-0"
+}
+
+variable "nat_gateway_name" {
+  type     = string
+  nullable = true
+  default  = "ng-0"
 }
 
 variable "security_lists" {
@@ -108,8 +113,14 @@ variable "route_tables" {
         destination         = "all-sin-services-in-oracle-services-network"
         destination_type    = "SERVICE_CIDR_BLOCK"
         description         = "Rule for traffic to OCI services"
+      },
+      {
+        network_entity_name = "natgw"
+        destination         = "0.0.0.0/0"
+        destination_type    = "CIDR_BLOCK"
+        description         = "Rule for traffic to Internet"
       }
-    ],
+    ]
   }
 }
 
