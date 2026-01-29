@@ -1,18 +1,11 @@
-module "tag" {
-  source         = "./modules/tag"
-  compartment_id = var.compartment_ocid
-}
-
 module "loggroup" {
   source         = "./modules/logging"
   compartment_id = var.compartment_ocid
-  depends_on     = [module.tag]
 }
 
 module "networking" {
   source         = "./modules/networking"
   compartment_id = var.compartment_ocid
-  depends_on     = [module.tag]
 }
 
 module "bastion" {
