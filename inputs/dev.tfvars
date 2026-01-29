@@ -1,6 +1,6 @@
-app_name = "helloapp"
-
+app_name    = "helloapp"
 environment = "dev"
+profile     = "DEFAULT"
 
 vcns = {
   "vcn-0" = {
