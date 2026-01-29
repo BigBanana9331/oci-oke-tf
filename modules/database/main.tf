@@ -46,7 +46,6 @@ output "secretbundle" {
 }
 
 resource "oci_identity_policy" "policy" {
-  #Required
   compartment_id = var.compartment_id
   description    = "policy created by terraform"
   name           = "dev-mysql-policy"
@@ -63,7 +62,6 @@ resource "oci_identity_policy" "policy" {
     "Allow any-user to read leaf-certificate-family in compartment ${data.oci_identity_compartment.compartment.name} where all {request.principal.type = 'mysqldbsystem', request.resource.compartment.id='${var.compartment_id}'}"
   ]
 
-  # tags
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
 
@@ -185,7 +183,6 @@ resource "oci_mysql_mysql_db_system" "mysql_db_system" {
     }
   }
 
-  # tags
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
 

@@ -19,7 +19,6 @@ resource "oci_file_storage_file_system" "test_file_system" {
   availability_domain = data.oci_identity_availability_domains.availability_domains.availability_domains[0].name
   kms_key_id          = var.key_name != null ? [for key in data.oci_kms_keys.keys[0].keys : key.id if key.display_name == var.key_name][0] : null
 
-  # tags
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
 

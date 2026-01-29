@@ -7,7 +7,6 @@ resource "oci_kms_vault" "vault" {
   display_name   = var.vault_name
   vault_type     = var.vault_type
 
-  # tags
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
 
@@ -41,7 +40,6 @@ resource "oci_kms_key" "master_keys" {
     }
   }
 
-  # tags
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
 
@@ -52,7 +50,6 @@ resource "oci_kms_key" "master_keys" {
 }
 
 resource "oci_identity_policy" "policy" {
-  #Required
   compartment_id = var.compartment_id
   description    = "policy created by terraform"
   name           = "${var.vault_name}-policy"
@@ -62,7 +59,6 @@ resource "oci_identity_policy" "policy" {
     [for key in oci_kms_key.master_keys : "Allow any-user to use keys in compartment ${data.oci_identity_compartment.compartment.name} where ALL {request.principal.type = 'cluster', target.key.id = '${key.id}'}"]
   ])
 
-  # tags
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
 
@@ -101,7 +97,6 @@ resource "oci_vault_secret" "secrets" {
     }
   }
 
-  # tags
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
 

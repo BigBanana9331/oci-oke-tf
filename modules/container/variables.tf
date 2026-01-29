@@ -1,13 +1,3 @@
-terraform {
-  required_version = ">= 1.5.7"
-  required_providers {
-    oci = {
-      source  = "oracle/oci"
-      version = "~> 7.30"
-    }
-  }
-}
-
 variable "tenancy_ocid" {
   type = string
 }
@@ -212,7 +202,7 @@ variable "node_pools" {
     node_pool_size                       = number
     cni_type                             = string
     is_pv_encryption_in_transit_enabled  = optional(bool, null)
-    key_name                             = optional(string)
+    key_name                             = optional(string, null)
     node_metadata                        = optional(map(string))
     initial_node_labels                  = optional(map(string))
     node_shape_ocpus                     = optional(number, null)

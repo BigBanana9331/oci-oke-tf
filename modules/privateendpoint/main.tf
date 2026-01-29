@@ -24,7 +24,6 @@ resource "oci_resourcemanager_private_endpoint" "private_endpoint" {
   dns_zones                                  = var.private_endpoint.dns_zones
   is_used_with_configuration_source_provider = var.private_endpoint.is_used_with_configuration_source_provider
 
-  # tags
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
 

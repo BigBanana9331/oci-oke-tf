@@ -35,11 +35,19 @@ variable "gateway_name" {
 variable "endpoint_type" {
   type    = string
   default = "PRIVATE"
+  validation {
+    condition     = contains(["PRIVATE", "PUBLIC"], var.endpoint_type)
+    error_message = "endpoint_type must be PRIVATE or PUBLIC"
+  }
 }
 
 variable "ip_mode" {
   type    = string
   default = "IPV4"
+  validation {
+    condition     = contains(["IPV4", "IPV6", "DUAL_STACK"], var.ip_mode)
+    error_message = "endpoint_type must be IPV4 or IPV6 or DUAL_STACK"
+  }
 }
 
 variable "nsg_names" {

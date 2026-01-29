@@ -20,7 +20,6 @@ resource "oci_queue_queue" "queue" {
   timeout_in_seconds               = var.queue_timeout_in_seconds
   visibility_in_seconds            = var.queue_visibility_in_seconds
 
-  # tags
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
 

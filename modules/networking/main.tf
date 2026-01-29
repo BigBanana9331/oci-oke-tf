@@ -155,7 +155,6 @@ resource "oci_core_security_list" "security_lists" {
     }
   }
 
-  # tags
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
 
@@ -256,7 +255,6 @@ resource "oci_core_route_table" "route_tables" {
     }
   }
 
-  # tags
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
 
@@ -265,7 +263,6 @@ resource "oci_core_route_table" "route_tables" {
   }
 
   depends_on = [
-    # oci_core_nat_gateway.nat_gateway,
     oci_core_service_gateway.service_gateway
   ]
 }
@@ -283,7 +280,6 @@ resource "oci_core_subnet" "subnets" {
   dhcp_options_id            = each.value.dhcp_options_id
   security_list_ids          = length(local.seclists) > 0 ? [for sl in each.value.security_list_names : local.seclists[sl]] : []
 
-  # tags
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
 

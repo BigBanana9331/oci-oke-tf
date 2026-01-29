@@ -33,25 +33,14 @@ data "oci_containerengine_node_pool_option" "node_pool_option" {
   node_pool_os_type     = var.node_pool_os_type
 }
 
-# data "oci_kms_vaults" "vaults" {
-#   compartment_id = var.compartment_id
-# }
+data "oci_kms_vaults" "vaults" {
+  compartment_id = var.compartment_id
+}
 
-# data "oci_kms_keys" "keys" {
-#   compartment_id      = var.compartment_id
-#   management_endpoint = [for vault in data.oci_kms_vaults.vaults.vaults : vault.management_endpoint if vault.display_name == var.vault_name][0]
-# }
-
-# data "oci_vault_secrets" "secrets" {
-#   compartment_id = var.compartment_id
-#   name           = var.ssh_secret_name
-#   vault_id       = [for vault in data.oci_kms_vaults.vaults.vaults : vault.id if vault.display_name == var.vault_name][0]
-# }
-
-
-# data "oci_secrets_secretbundle" "secretbundle" {
-#   secret_id = data.oci_vault_secrets.secrets.secrets[0].id
-# }
+data "oci_kms_keys" "keys" {
+  compartment_id      = var.compartment_id
+  management_endpoint = [for vault in data.oci_kms_vaults.vaults.vaults : vault.management_endpoint if vault.display_name == var.vault_name][0]
+}
 
 
 locals {
@@ -67,7 +56,7 @@ resource "oci_containerengine_cluster" "cluster" {
   vcn_id             = data.oci_core_vcns.vcns.virtual_networks[0].id
   type               = var.cluster_type
   kubernetes_version = var.kubernetes_version
-  # kms_key_id         = [for key in data.oci_kms_keys.keys.keys : key.id if key.display_name == var.key_name][0]
+  kms_key_id         = var.key_name != null ? [for key in data.oci_kms_keys.keys.keys : key.id if key.display_name == var.key_name][0] : null
 
   endpoint_config {
     subnet_id            = [for subnet in data.oci_core_subnets.subnets.subnets : subnet.id if subnet.display_name == var.cluster_subnet_name][0]
@@ -286,8 +275,8 @@ resource "oci_containerengine_node_pool" "node_pool" {
   node_config_details {
     size = each.value.node_pool_size
 
-    # is_pv_encryption_in_transit_enabled = each.value.is_pv_encryption_in_transit_enabled
-    # kms_key_id                          = [for key in data.oci_kms_keys.keys.keys : key.id if key.display_name == each.value.key_name][0]
+    is_pv_encryption_in_transit_enabled = each.value.is_pv_encryption_in_transit_enabled
+    kms_key_id                          = each.value.key_name != null ? [for key in data.oci_kms_keys.keys.keys : key.id if key.display_name == each.value.key_name][0] : null
 
     nsg_ids = flatten([for nsg in data.oci_core_network_security_groups.network_security_groups.network_security_groups :
     [for nsg_name in each.value.node_nsg_names : nsg.id if nsg.display_name == nsg_name]])
@@ -310,7 +299,6 @@ resource "oci_containerengine_node_pool" "node_pool" {
     source_type = each.value.source_type
   }
 
-  # tags
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
 

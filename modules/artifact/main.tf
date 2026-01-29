@@ -5,7 +5,6 @@ resource "oci_artifacts_container_repository" "container_repository" {
   is_immutable   = each.value.is_immutable
   is_public      = each.value.is_public
 
-  # tags
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
 

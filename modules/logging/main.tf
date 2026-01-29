@@ -3,7 +3,6 @@ resource "oci_logging_log_group" "log_group" {
   display_name   = var.log_group_name
   description    = var.log_group_description
 
-  # tags
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
 

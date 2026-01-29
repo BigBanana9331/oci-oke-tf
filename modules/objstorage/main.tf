@@ -20,7 +20,6 @@ resource "oci_objectstorage_bucket" "bucket" {
   namespace      = data.oci_objectstorage_namespace.namespace.namespace
   kms_key_id     = var.key_name != null ? [for key in data.oci_kms_keys.keys[0].keys : key.id if key.display_name == var.key_name][0] : null
 
-  # tags
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
 
