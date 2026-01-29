@@ -51,4 +51,8 @@ variable "max_session_ttl_in_seconds" {
 variable "client_cidr_block_allow_list" {
   type    = list(string)
   default = ["0.0.0.0/0"]
+  validation {
+    condition     = alltrue([for cidr in var.client_cidr_block_allow_list : can(cidrhost(cidr, 32))])
+    error_message = "Must be valid IPv4 CIDR."
+  }
 }
