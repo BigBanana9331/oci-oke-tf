@@ -186,35 +186,6 @@ variable "nsgs" {
   nullable = true
   default = {
     "dev-nsg-bastion" = [
-      # {
-      #   direction   = "INGRESS"
-      #   protocol    = "all"
-      #   source_type = "CIDR_BLOCK"
-      #   source      = "10.0.0.0/16"
-      #   description = "Allow all ingress from VCN. Enhanced later"
-      # },
-      # {
-      #   direction   = "INGRESS"
-      #   protocol    = "1"
-      #   source_type = "CIDR_BLOCK"
-      #   source      = "10.0.0.0/16"
-      #   description = "Path Discovery for worker nodes"
-      #   icmp_options = {
-      #     type = 3
-      #     code = 4
-      #   }
-      # },
-      # {
-      #   direction        = "EGRESS"
-      #   protocol         = "1"
-      #   destination_type = "CIDR_BLOCK"
-      #   destination      = "0.0.0.0/0"
-      #   description      = "Path Discovery."
-      #   icmp_options = {
-      #     type = 3
-      #     code = 4
-      #   }
-      # },
       {
         direction        = "EGRESS"
         protocol         = "6"
@@ -263,28 +234,28 @@ variable "nsgs" {
         source      = "10.0.0.0/16"
         description = "Allow all ingress from VCN. Enhanced later"
       },
-      # {
-      #   direction   = "INGRESS"
-      #   protocol    = "1"
-      #   source_type = "CIDR_BLOCK"
-      #   source      = "10.0.0.0/16"
-      #   description = "Path Discovery for worker nodes"
-      #   icmp_options = {
-      #     type = 3
-      #     code = 4
-      #   }
-      # },
-      # {
-      #   direction        = "EGRESS"
-      #   protocol         = "1"
-      #   destination_type = "CIDR_BLOCK"
-      #   destination      = "0.0.0.0/0"
-      #   description      = "Path Discovery."
-      #   icmp_options = {
-      #     type = 3
-      #     code = 4
-      #   }
-      # },
+      {
+        direction   = "INGRESS"
+        protocol    = "1"
+        source_type = "CIDR_BLOCK"
+        source      = "10.0.0.0/16"
+        description = "Path Discovery for worker nodes"
+        icmp_options = {
+          type = 3
+          code = 4
+        }
+      },
+      {
+        direction        = "EGRESS"
+        protocol         = "1"
+        destination_type = "CIDR_BLOCK"
+        destination      = "0.0.0.0/0"
+        description      = "Path Discovery."
+        icmp_options = {
+          type = 3
+          code = 4
+        }
+      },
       {
         direction        = "EGRESS"
         protocol         = "6"
@@ -391,28 +362,28 @@ variable "nsgs" {
           }
         }
       },
-      # {
-      #   direction   = "INGRESS"
-      #   protocol    = "1"
-      #   source_type = "CIDR_BLOCK"
-      #   source      = "10.0.0.0/16"
-      #   description = "Path Discovery"
-      #   icmp_options = {
-      #     type = 3
-      #     code = 4
-      #   }
-      # },
-      # {
-      #   direction        = "EGRESS"
-      #   protocol         = "1"
-      #   destination_type = "CIDR_BLOCK"
-      #   destination      = "0.0.0.0/0"
-      #   description      = "Path Discovery."
-      #   icmp_options = {
-      #     type = 3
-      #     code = 4
-      #   }
-      # },
+      {
+        direction   = "INGRESS"
+        protocol    = "1"
+        source_type = "CIDR_BLOCK"
+        source      = "10.0.0.0/16"
+        description = "Path Discovery"
+        icmp_options = {
+          type = 3
+          code = 4
+        }
+      },
+      {
+        direction        = "EGRESS"
+        protocol         = "1"
+        destination_type = "CIDR_BLOCK"
+        destination      = "0.0.0.0/0"
+        description      = "Path Discovery."
+        icmp_options = {
+          type = 3
+          code = 4
+        }
+      },
       {
         direction        = "EGRESS"
         protocol         = "6"
@@ -487,28 +458,28 @@ variable "nsgs" {
       #     }
       #   }
       # },
-      # {
-      #   direction   = "INGRESS"
-      #   protocol    = "1"
-      #   source_type = "CIDR_BLOCK"
-      #   source      = "10.0.0.0/16"
-      #   description = "Path Discovery for worker nodes"
-      #   icmp_options = {
-      #     type = 3
-      #     code = 4
-      #   }
-      # },
-      # {
-      #   direction        = "EGRESS"
-      #   protocol         = "1"
-      #   destination_type = "CIDR_BLOCK"
-      #   destination      = "0.0.0.0/0"
-      #   description      = "Path Discovery."
-      #   icmp_options = {
-      #     type = 3
-      #     code = 4
-      #   }
-      # },
+      {
+        direction   = "INGRESS"
+        protocol    = "1"
+        source_type = "CIDR_BLOCK"
+        source      = "10.0.0.0/16"
+        description = "Path Discovery for worker nodes"
+        icmp_options = {
+          type = 3
+          code = 4
+        }
+      },
+      {
+        direction        = "EGRESS"
+        protocol         = "1"
+        destination_type = "CIDR_BLOCK"
+        destination      = "0.0.0.0/0"
+        description      = "Path Discovery."
+        icmp_options = {
+          type = 3
+          code = 4
+        }
+      },
       {
         direction        = "EGRESS"
         protocol         = "6"
@@ -570,42 +541,13 @@ variable "nsgs" {
           }
         }
       },
-      # {
-      #   direction   = "INGRESS"
-      #   protocol    = "1"
-      #   source_type = "CIDR_BLOCK"
-      #   source      = "10.0.0.0/16"
-      #   description = "Path Discovery"
-      #   icmp_options = {
-      #     type = 3
-      #     code = 4
-      #   }
-      # },
-      # {
-      #   direction        = "EGRESS"
-      #   protocol         = "1"
-      #   destination_type = "CIDR_BLOCK"
-      #   destination      = "0.0.0.0/0"
-      #   description      = "Path Discovery."
-      #   icmp_options = {
-      #     type = 3
-      #     code = 4
-      #   }
-      # },
       {
         direction        = "EGRESS"
         protocol         = "6"
         destination_type = "SERVICE_CIDR_BLOCK"
         destination      = "all-sin-services-in-oracle-services-network"
         description      = "Allow nodes to communicate with OCI services"
-      },
-      # {
-      #   direction        = "EGRESS"
-      #   protocol         = "6"
-      #   destination_type = "CIDR_BLOCK"
-      #   destination      = "10.0.0.0/16"
-      #   description      = "Allow to communicate within VCN. Enhance later"
-      # },
+      }
     ]
     "dev-nsg-apigateway" = [
       {
