@@ -432,32 +432,32 @@ variable "nsgs" {
           }
         }
       },
-      # {
-      #   direction   = "INGRESS"
-      #   protocol    = "6"
-      #   source_type = "CIDR_BLOCK"
-      #   source      = "10.0.1.0/24"
-      #   description = "Kubernetes worker to Kubernetes API endpoint communication."
-      #   tcp_options = {
-      #     destination_port_range = {
-      #       min = 12250
-      #       max = 12250
-      #     }
-      #   }
-      # },
-      # {
-      #   direction   = "INGRESS"
-      #   protocol    = "6"
-      #   source_type = "CIDR_BLOCK"
-      #   source      = "10.0.1.0/24"
-      #   description = "Kubernetes worker to Kubernetes API endpoint communication."
-      #   tcp_options = {
-      #     destination_port_range = {
-      #       min = 10250
-      #       max = 10250
-      #     }
-      #   }
-      # },
+      {
+        direction   = "INGRESS"
+        protocol    = "6"
+        source_type = "CIDR_BLOCK"
+        source      = "10.0.1.0/24"
+        description = "Kubernetes worker to Kubernetes API endpoint communication."
+        tcp_options = {
+          destination_port_range = {
+            min = 12250
+            max = 12250
+          }
+        }
+      },
+      {
+        direction   = "INGRESS"
+        protocol    = "6"
+        source_type = "CIDR_BLOCK"
+        source      = "10.0.1.0/24"
+        description = "Kubernetes worker to Kubernetes API endpoint communication."
+        tcp_options = {
+          destination_port_range = {
+            min = 10250
+            max = 10250
+          }
+        }
+      },
       {
         direction   = "INGRESS"
         protocol    = "1"
