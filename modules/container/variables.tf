@@ -229,7 +229,6 @@ variable "node_pools" {
       cni_type                            = "FLANNEL_OVERLAY"
       node_nsg_names                      = ["dev-nsg-oke-workernode"]
       is_pv_encryption_in_transit_enabled = true
-      key_name                            = "encryption-key"
 
       node_metadata = {
         meta = "meta1"

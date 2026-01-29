@@ -104,7 +104,6 @@ resource "oci_containerengine_cluster" "cluster" {
     }
   }
 
-  # tags
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
 
