@@ -26,11 +26,11 @@ module "networking" {
   depends_on     = [module.tag]
 }
 
-module "artifact" {
-  source         = "./modules/artifact"
-  compartment_id = var.compartment_ocid
-  depends_on     = [module.tag]
-}
+# module "artifact" {
+#   source         = "./modules/artifact"
+#   compartment_id = var.compartment_ocid
+#   depends_on     = [module.tag]
+# }
 
 # module "queue" {
 #   source         = "./modules/queue"
@@ -48,11 +48,11 @@ module "bastion" {
   depends_on     = [module.networking]
 }
 
-module "privateendpoint" {
-  source         = "./modules/privateendpoint"
-  compartment_id = var.compartment_ocid
-  depends_on     = [module.networking]
-}
+# module "privateendpoint" {
+#   source         = "./modules/privateendpoint"
+#   compartment_id = var.compartment_ocid
+#   depends_on     = [module.networking]
+# }
 
 module "apigateway" {
   source         = "./modules/apigateway"

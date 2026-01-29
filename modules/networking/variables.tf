@@ -389,17 +389,17 @@ variable "nsgs" {
       #     code = 4
       #   }
       # },
-      # {
-      #   direction        = "EGRESS"
-      #   protocol         = "1"
-      #   destination_type = "CIDR_BLOCK"
-      #   destination      = "0.0.0.0/0"
-      #   description      = "Path Discovery."
-      #   icmp_options = {
-      #     type = 3
-      #     code = 4
-      #   }
-      # },
+      {
+        direction        = "EGRESS"
+        protocol         = "1"
+        destination_type = "CIDR_BLOCK"
+        destination      = "0.0.0.0/0"
+        description      = "Path Discovery."
+        icmp_options = {
+          type = 3
+          code = 4
+        }
+      },
       {
         direction        = "EGRESS"
         protocol         = "6"
