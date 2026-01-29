@@ -13,23 +13,31 @@ variable "tags" {
   default = { "definedTags" = {}, "freeformTags" = { "CreatedBy" = "Terraform" } }
 }
 
+variable "environment" {
+  type = string
+}
+
+variable "app_name" {
+  type = string
+}
+
 variable "compartment_id" {
   type = string
 }
 
 variable "vcn_name" {
   type    = string
-  default = "dev-vcn"
+  default = "vcn-0"
 }
 
 variable "subnet_name" {
   type    = string
-  default = "dev-subnet-bastion"
+  default = "subnet-bastion"
 }
 
 variable "gateway_name" {
   type    = string
-  default = "dev-apigateway"
+  default = "apigateway-0"
 }
 
 variable "endpoint_type" {
@@ -52,5 +60,5 @@ variable "ip_mode" {
 
 variable "nsg_names" {
   type    = set(string)
-  default = ["dev-nsg-apigateway"]
+  default = ["nsg-apigateway"]
 }

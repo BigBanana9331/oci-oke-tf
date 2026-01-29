@@ -1,11 +1,19 @@
 terraform {
-  required_version = ">= 1.5.7"
+  required_version = "~> 1.14"
   required_providers {
     oci = {
       source  = "oracle/oci"
       version = "~> 7.30"
     }
   }
+}
+
+variable "environment" {
+  type = string
+}
+
+variable "app_name" {
+  type = string
 }
 
 variable "compartment_id" {
@@ -19,17 +27,17 @@ variable "tags" {
 
 variable "vcn_name" {
   type    = string
-  default = "dev-vcn"
+  default = "vcn"
 }
 
 variable "subnet_name" {
   type    = string
-  default = "dev-subnet-bastion"
+  default = "subnet-bastion"
 }
 
 variable "bastion_name" {
   type    = string
-  default = "dev-bastion"
+  default = "bastion-0"
 }
 
 variable "bastion_type" {

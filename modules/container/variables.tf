@@ -1,8 +1,26 @@
+terraform {
+  required_version = ">= 1.5.7"
+  required_providers {
+    oci = {
+      source  = "oracle/oci"
+      version = "~> 7.30"
+    }
+  }
+}
+
 variable "tenancy_ocid" {
   type = string
 }
 
 variable "compartment_id" {
+  type = string
+}
+
+variable "environment" {
+  type = string
+}
+
+variable "app_name" {
   type = string
 }
 
@@ -13,7 +31,71 @@ variable "tags" {
 
 variable "log_group_name" {
   type    = string
-  default = "dev-loggroup"
+  default = "loggroup-0"
+}
+
+variable "instance_dynamic_group" {
+  type = object({
+    description = optional(string)
+    name        = optional(string, "nodes-dg")
+  })
+  default = {
+    description = "Nodepool dyanmic group"
+    name        = "nodes-dg"
+  }
+}
+
+variable "policy" {
+  type = object({
+    description = optional(string, "policy created by terraform")
+    name        = optional(string, "oke-policy")
+  })
+  default = {
+    description = "policy created by terraform"
+    name        = "oke-policy"
+  }
+}
+
+variable "unified_agent_configuration" {
+  type = object({
+    description        = optional(string, "Custom log confguration")
+    name               = optional(string, "nodes-uac")
+    is_enabled         = optional(bool, true)
+    configuration_type = optional(string, "LOGGING")
+    log_object_name    = optional(string, "customlog-oke")
+    source = object({
+      name        = optional(string, "worker-logtail")
+      source_type = optional(string, "LOG_TAIL")
+      paths       = optional(list(string), ["/var/log/containers/*", "/var/log/pods/*"])
+      parser_type = optional(string, "NONE")
+    })
+  })
+  default = {
+    description        = "Custom log confguration"
+    name               = "nodes-uac"
+    is_enabled         = true
+    configuration_type = "LOGGING"
+    log_object_name    = "customlog-oke"
+    source = {
+      name        = "worker-logtail"
+      source_type = "LOG_TAIL"
+      paths       = ["/var/log/containers/*", "/var/log/pods/*"]
+      parser_type = "NONE"
+    }
+  }
+}
+
+variable "autoscaler" {
+  type = object({
+    is_enabled = optional(bool, true)
+    min_node   = optional(number, 1)
+    max_node   = optional(number, 2)
+  })
+  default = {
+    is_enabled = true
+    min_node   = 1
+    max_node   = 2
+  }
 }
 
 variable "logs" {
@@ -28,14 +110,14 @@ variable "logs" {
     parameters         = optional(map(string))
   }))
   default = {
-    "dev-servicelog-oke" = {
+    "servicelog-oke" = {
       type        = "SERVICE"
       source_type = "OCISERVICE"
       service     = "oke-k8s-cp-prod"
       # resource    = "dev-oke"
       category = "all-service-logs"
     }
-    "dev-customlog-oke" = {
+    "customlog-oke" = {
       type = "CUSTOM"
     }
   }
@@ -43,12 +125,13 @@ variable "logs" {
 
 variable "vcn_name" {
   type    = string
-  default = "dev-vcn"
+  default = "vcn-0"
 }
 
 variable "vault_name" {
-  type    = string
-  default = "dev-vault"
+  type     = string
+  nullable = true
+  default  = null
 }
 
 variable "key_name" {
@@ -58,13 +141,14 @@ variable "key_name" {
 }
 
 variable "ssh_secret_name" {
-  type    = string
-  default = "dev-nodepool-ssh-key"
+  type     = string
+  nullable = true
+  default  = null
 }
 
 variable "cluster_name" {
   type    = string
-  default = "dev-oke"
+  default = "oke-0"
 }
 
 variable "cluster_type" {
@@ -94,13 +178,13 @@ variable "node_pool_os_type" {
 
 variable "cluster_subnet_name" {
   type    = string
-  default = "dev-subnet-oke-apiendpoint"
+  default = "subnet-oke-apiendpoint"
 }
 
 variable "endpoint_nsg_names" {
   type     = set(string)
   nullable = true
-  default  = ["dev-nsg-oke-apiendpoint"]
+  default  = ["nsg-oke-apiendpoint"]
 }
 
 variable "cni_type" {
@@ -120,12 +204,12 @@ variable "is_pod_security_policy_enabled" {
 
 variable "loadbalancer_subnet_name" {
   type    = string
-  default = "dev-subnet-oke-serviceloadbalancer"
+  default = "subnet-oke-serviceloadbalancer"
 }
 
 variable "worker_subnet_name" {
   type    = string
-  default = "dev-subnet-oke-workernode"
+  default = "subnet-oke-workernode"
 }
 
 variable "services_cidr" {
@@ -227,7 +311,7 @@ variable "node_pools" {
       node_shape_memory_in_gbs            = 8
       node_pool_size                      = 1
       cni_type                            = "FLANNEL_OVERLAY"
-      node_nsg_names                      = ["dev-nsg-oke-workernode"]
+      node_nsg_names                      = ["nsg-oke-workernode"]
       is_pv_encryption_in_transit_enabled = true
 
       node_metadata = {

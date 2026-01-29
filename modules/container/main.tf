@@ -8,12 +8,12 @@ data "oci_identity_compartment" "compartment" {
 
 data "oci_logging_log_groups" "log_groups" {
   compartment_id = var.compartment_id
-  display_name   = var.log_group_name
+  display_name   = join("-", [var.environment, var.app_name, var.log_group_name])
 }
 
 data "oci_core_vcns" "vcns" {
   compartment_id = var.compartment_id
-  display_name   = var.vcn_name
+  display_name   = join("-", [var.environment, var.app_name, var.vcn_name])
 }
 
 data "oci_core_subnets" "subnets" {
@@ -27,21 +27,11 @@ data "oci_core_network_security_groups" "network_security_groups" {
 }
 
 data "oci_containerengine_node_pool_option" "node_pool_option" {
-  node_pool_k8s_version = var.kubernetes_version
   node_pool_option_id   = var.node_pool_option_id
+  node_pool_k8s_version = var.kubernetes_version
   node_pool_os_arch     = var.node_pool_os_arch
   node_pool_os_type     = var.node_pool_os_type
 }
-
-data "oci_kms_vaults" "vaults" {
-  compartment_id = var.compartment_id
-}
-
-data "oci_kms_keys" "keys" {
-  compartment_id      = var.compartment_id
-  management_endpoint = [for vault in data.oci_kms_vaults.vaults.vaults : vault.management_endpoint if vault.display_name == var.vault_name][0]
-}
-
 
 locals {
   image_id = [
@@ -51,18 +41,17 @@ locals {
 }
 
 resource "oci_containerengine_cluster" "cluster" {
-  name               = var.cluster_name
+  name               = join("-", [var.environment, var.app_name, var.cluster_name])
   compartment_id     = var.compartment_id
   vcn_id             = data.oci_core_vcns.vcns.virtual_networks[0].id
   type               = var.cluster_type
   kubernetes_version = var.kubernetes_version
-  kms_key_id         = var.key_name != null ? [for key in data.oci_kms_keys.keys.keys : key.id if key.display_name == var.key_name][0] : null
 
   endpoint_config {
-    subnet_id            = [for subnet in data.oci_core_subnets.subnets.subnets : subnet.id if subnet.display_name == var.cluster_subnet_name][0]
+    subnet_id            = [for subnet in data.oci_core_subnets.subnets.subnets : subnet.id if subnet.display_name == join("-", [var.environment, var.app_name, var.cluster_subnet_name])][0]
     is_public_ip_enabled = var.is_public_endpoint_enabled
     nsg_ids = flatten([for nsg in data.oci_core_network_security_groups.network_security_groups.network_security_groups :
-    [for nsg_name in var.endpoint_nsg_names : nsg.id if nsg.display_name == nsg_name]])
+    [for nsg_name in var.endpoint_nsg_names : nsg.id if nsg.display_name == join("-", [var.environment, var.app_name, nsg_name])]])
   }
 
   cluster_pod_network_options {
@@ -70,7 +59,7 @@ resource "oci_containerengine_cluster" "cluster" {
   }
 
   options {
-    service_lb_subnet_ids = [for subnet in data.oci_core_subnets.subnets.subnets : subnet.id if subnet.display_name == var.loadbalancer_subnet_name]
+    service_lb_subnet_ids = [for subnet in data.oci_core_subnets.subnets.subnets : subnet.id if subnet.display_name == join("-", [var.environment, var.app_name, var.loadbalancer_subnet_name])]
 
     kubernetes_network_config {
       pods_cidr     = var.pods_cidr
@@ -115,7 +104,7 @@ resource "oci_containerengine_cluster" "cluster" {
 resource "oci_logging_log" "logs" {
   for_each           = var.logs
   log_group_id       = data.oci_logging_log_groups.log_groups.log_groups[0].id
-  display_name       = each.key
+  display_name       = join("-", [var.environment, var.app_name, each.key])
   log_type           = each.value.type
   is_enabled         = each.value.is_enabled
   retention_duration = each.value.retention_duration
@@ -134,7 +123,6 @@ resource "oci_logging_log" "logs" {
     }
   }
 
-  # tags
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
 
@@ -147,11 +135,10 @@ resource "oci_logging_log" "logs" {
 
 resource "oci_identity_dynamic_group" "dynamic_group" {
   compartment_id = var.tenancy_ocid
-  description    = "Dynamic group for nodepool instances"
+  description    = var.instance_dynamic_group.description
   matching_rule  = "ANY {instance.compartment.id = '${var.compartment_id}'}"
-  name           = "dev-nodes-dg"
+  name           = join("-", [var.environment, var.app_name, var.instance_dynamic_group.name])
 
-  # tags
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
 
@@ -161,10 +148,9 @@ resource "oci_identity_dynamic_group" "dynamic_group" {
 }
 
 resource "oci_identity_policy" "policy" {
-  #Required
   compartment_id = var.compartment_id
-  description    = "policy created by terraform"
-  name           = "oke-policy"
+  description    = var.policy.description
+  name           = join("-", [var.environment, var.app_name, var.policy.name])
 
   statements = [
     "Allow any-user to manage load-balancers in compartment ${data.oci_identity_compartment.compartment.name} where all {request.principal.type = 'workload', request.principal.namespace = 'native-ingress-controller-system', request.principal.service_account = 'oci-native-ingress-controller', request.principal.cluster_id = '${oci_containerengine_cluster.cluster.id}'}",
@@ -192,7 +178,6 @@ resource "oci_identity_policy" "policy" {
     "Allow dynamic-group dev-nodes-dg to use log-content in compartment ${data.oci_identity_compartment.compartment.name}" # managed nodes log
   ]
 
-  # tags
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
 
@@ -226,7 +211,7 @@ resource "oci_containerengine_addon" "ingress_controller_addon" {
 
   configurations {
     key   = "loadBalancerSubnetId"
-    value = [for subnet in data.oci_core_subnets.subnets.subnets : subnet.id if subnet.display_name == var.loadbalancer_subnet_name][0]
+    value = [for subnet in data.oci_core_subnets.subnets.subnets : subnet.id if subnet.display_name == join("-", [var.environment, var.app_name, var.loadbalancer_subnet_name])][0]
   }
 
   depends_on = [oci_containerengine_addon.cert_manager_addon]
@@ -235,7 +220,7 @@ resource "oci_containerengine_addon" "ingress_controller_addon" {
 resource "oci_containerengine_node_pool" "node_pool" {
   for_each = var.node_pools
 
-  name               = each.key
+  name               = join("-", [var.environment, var.app_name, each.key])
   cluster_id         = oci_containerengine_cluster.cluster.id
   compartment_id     = var.compartment_id
   kubernetes_version = var.kubernetes_version
@@ -272,16 +257,13 @@ resource "oci_containerengine_node_pool" "node_pool" {
   }
 
   node_config_details {
-    size = each.value.node_pool_size
-
+    size                                = each.value.node_pool_size
     is_pv_encryption_in_transit_enabled = each.value.is_pv_encryption_in_transit_enabled
-    kms_key_id                          = each.value.key_name != null ? [for key in data.oci_kms_keys.keys.keys : key.id if key.display_name == each.value.key_name][0] : null
-
     nsg_ids = flatten([for nsg in data.oci_core_network_security_groups.network_security_groups.network_security_groups :
-    [for nsg_name in each.value.node_nsg_names : nsg.id if nsg.display_name == nsg_name]])
+    [for nsg_name in each.value.node_nsg_names : nsg.id if nsg.display_name == join("-", [var.environment, var.app_name, nsg_name])]])
 
     placement_configs {
-      subnet_id           = [for subnet in data.oci_core_subnets.subnets.subnets : subnet.id if subnet.display_name == var.worker_subnet_name][0]
+      subnet_id           = [for subnet in data.oci_core_subnets.subnets.subnets : subnet.id if subnet.display_name == join("-", [var.environment, var.app_name, var.worker_subnet_name])][0]
       availability_domain = data.oci_identity_availability_domains.availability_domains.availability_domains[0].name
     }
 
@@ -313,22 +295,22 @@ resource "oci_containerengine_node_pool" "node_pool" {
 
 resource "oci_logging_unified_agent_configuration" "unified_agent_configuration" {
   compartment_id = var.compartment_id
-  description    = "Custom log confguration"
-  display_name   = "dev-nodes-uac"
-  is_enabled     = true
+  description    = var.unified_agent_configuration.description
+  display_name   = join("-", [var.environment, var.app_name, var.unified_agent_configuration.name])
+  is_enabled     = var.unified_agent_configuration.is_enabled
 
   service_configuration {
-    configuration_type = "LOGGING"
+    configuration_type = var.unified_agent_configuration.configuration_type
     destination {
-      log_object_id = [for log in oci_logging_log.logs : log.id if log.display_name == "dev-customlog-oke"][0]
+      log_object_id = [for log in oci_logging_log.logs : log.id if log.display_name == join("-", [var.environment, var.app_name, var.unified_agent_configuration.log_object_name])][0]
     }
 
     sources {
-      name        = "worker-logtail"
-      source_type = "LOG_TAIL"
-      paths       = ["/var/log/containers/*", "/var/log/pods/*"]
+      name        = join("-", [var.environment, var.app_name, var.unified_agent_configuration.source.name])
+      source_type = var.unified_agent_configuration.source.source_type
+      paths       = var.unified_agent_configuration.source.paths
       parser {
-        parser_type = "NONE"
+        parser_type = var.unified_agent_configuration.source.parser_type
       }
     }
   }
@@ -337,7 +319,6 @@ resource "oci_logging_unified_agent_configuration" "unified_agent_configuration"
     group_list = [oci_identity_dynamic_group.dynamic_group.id]
   }
 
-  # tags
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
 
@@ -355,6 +336,7 @@ resource "oci_containerengine_addon" "metric_server_addon" {
 }
 
 resource "oci_containerengine_addon" "auto_scaler_addon" {
+  count                            = var.autoscaler.is_enabled ? 1 : 0
   addon_name                       = "ClusterAutoscaler"
   cluster_id                       = oci_containerengine_cluster.cluster.id
   remove_addon_resources_on_delete = true
@@ -366,7 +348,7 @@ resource "oci_containerengine_addon" "auto_scaler_addon" {
 
   configurations {
     key   = "nodes"
-    value = join(", ", formatlist("1:2:%s", [for nodepool in oci_containerengine_node_pool.node_pool : nodepool.id]))
+    value = join(", ", formatlist("${var.autoscaler.min_node}:${var.autoscaler.max_node}:%s", [for nodepool in oci_containerengine_node_pool.node_pool : nodepool.id]))
   }
 
   depends_on = [oci_containerengine_node_pool.node_pool]

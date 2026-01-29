@@ -1,12 +1,12 @@
 data "oci_core_vcns" "vcns" {
   compartment_id = var.compartment_id
-  display_name   = var.vcn_name
+  display_name   = join("-", [var.environment, var.app_name, var.vcn_name])
 }
 
 data "oci_core_subnets" "subnets" {
   compartment_id = var.compartment_id
   vcn_id         = data.oci_core_vcns.vcns.virtual_networks[0].id
-  display_name   = var.subnet_name
+  display_name   = join("-", [var.environment, var.app_name, var.subnet_name])
 }
 
 data "oci_core_network_security_groups" "network_security_groups" {
@@ -14,7 +14,7 @@ data "oci_core_network_security_groups" "network_security_groups" {
   vcn_id         = data.oci_core_vcns.vcns.virtual_networks[0].id
   filter {
     name   = "display_name"
-    values = var.nsg_names
+    values = [for nsg_name in var.nsg_names : join("-", [var.environment, var.app_name, nsg_name])]
   }
 }
 

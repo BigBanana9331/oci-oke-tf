@@ -49,7 +49,7 @@ locals {
 resource "oci_core_vcn" "vcn" {
   compartment_id = var.compartment_id
   cidr_blocks    = var.vcn.cidr_blocks
-  display_name   = var.vcn.name
+  display_name   = join("-", [var.environment, var.app_name, var.vcn.name])
 
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
@@ -63,7 +63,7 @@ resource "oci_core_service_gateway" "service_gateway" {
   count          = var.service_gateway_name != null ? 1 : 0
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
-  display_name   = var.service_gateway_name
+  display_name   = join("-", [var.environment, var.app_name, var.service_gateway_name])
 
   services {
     service_id = data.oci_core_services.services.services[0].id
@@ -80,7 +80,7 @@ resource "oci_core_service_gateway" "service_gateway" {
 resource "oci_core_security_list" "security_lists" {
   for_each = var.security_lists != null ? var.security_lists : {}
 
-  display_name   = each.key
+  display_name   = join("-", [var.environment, var.app_name, each.key])
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
 
@@ -167,7 +167,7 @@ resource "oci_core_network_security_group" "network_security_groups" {
   for_each       = var.nsgs != null ? var.nsgs : {}
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
-  display_name   = each.key
+  display_name   = join("-", [var.environment, var.app_name, each.key])
 
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags
@@ -241,7 +241,7 @@ resource "oci_core_network_security_group_security_rule" "network_security_group
 resource "oci_core_route_table" "route_tables" {
   for_each = var.route_tables != null ? var.route_tables : {}
 
-  display_name   = each.key
+  display_name   = join("-", [var.environment, var.app_name, each.key])
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
 
@@ -270,7 +270,7 @@ resource "oci_core_route_table" "route_tables" {
 resource "oci_core_subnet" "subnets" {
   for_each = var.subnets != null ? var.subnets : {}
 
-  display_name               = each.key
+  display_name               = join("-", [var.environment, var.app_name, each.key])
   compartment_id             = var.compartment_id
   vcn_id                     = oci_core_vcn.vcn.id
   cidr_block                 = each.value.cidr_block

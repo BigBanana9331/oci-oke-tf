@@ -11,9 +11,11 @@ variable "region" {
 }
 
 variable "environment" {
-  type     = string
-  nullable = true
-  default  = null
+  type = string
+}
+
+variable "app_name" {
+  type = string
 }
 
 variable "api_gateway" {

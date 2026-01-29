@@ -8,6 +8,13 @@ terraform {
   }
 }
 
+variable "environment" {
+  type = string
+}
+
+variable "app_name" {
+  type = string
+}
 
 variable "compartment_id" {
   type = string
@@ -24,7 +31,7 @@ variable "vcn" {
     cidr_blocks = list(string)
   })
   default = {
-    name        = "dev-vcn"
+    name        = "vcn-0"
     cidr_blocks = ["10.0.0.0/16"]
   }
 }
@@ -32,7 +39,7 @@ variable "vcn" {
 variable "service_gateway_name" {
   type     = string
   nullable = true
-  default  = "dev-sg"
+  default  = "sg-0"
 }
 
 variable "security_lists" {
@@ -117,27 +124,27 @@ variable "subnets" {
     security_list_names        = optional(list(string))
   }))
   default = {
-    "dev-subnet-oke-apiendpoint" = {
+    "subnet-oke-apiendpoint" = {
       cidr_block       = "10.0.0.0/30"
       route_table_name = "routetable-private"
     },
-    "dev-subnet-oke-workernode" = {
+    "subnet-oke-workernode" = {
       cidr_block       = "10.0.1.0/24"
       route_table_name = "routetable-private"
     },
-    "dev-subnet-oke-serviceloadbalancer" = {
+    "subnet-oke-serviceloadbalancer" = {
       cidr_block       = "10.0.2.0/24"
       route_table_name = "routetable-private"
     },
-    "dev-subnet-bastion" = {
+    "subnet-bastion" = {
       cidr_block       = "10.0.3.0/24"
       route_table_name = "routetable-private"
     },
-    "dev-subnet-mysql" = {
+    "subnet-mysql" = {
       cidr_block       = "10.0.4.0/24"
       route_table_name = "routetable-private"
     },
-    "dev-subnet-apigateway" = {
+    "subnet-apigateway" = {
       cidr_block       = "10.0.5.0/24"
       route_table_name = "routetable-private"
     }
@@ -185,7 +192,7 @@ variable "nsgs" {
 
   nullable = true
   default = {
-    "dev-nsg-bastion" = [
+    "nsg-bastion" = [
       {
         direction        = "EGRESS"
         protocol         = "6"
@@ -226,7 +233,7 @@ variable "nsgs" {
         }
       },
     ]
-    "dev-nsg-oke-serviceloadbalancer" = [
+    "nsg-oke-serviceloadbalancer" = [
       {
         direction   = "INGRESS"
         protocol    = "6"
@@ -296,7 +303,7 @@ variable "nsgs" {
       #   }
       # }
     ]
-    "dev-nsg-oke-workernode" = [
+    "nsg-oke-workernode" = [
       {
         direction   = "INGRESS"
         protocol    = "6"
@@ -405,7 +412,7 @@ variable "nsgs" {
         }
       }
     ]
-    "dev-nsg-oke-apiendpoint" = [
+    "nsg-oke-apiendpoint" = [
       {
         direction   = "INGRESS"
         protocol    = "6"
@@ -514,7 +521,7 @@ variable "nsgs" {
         }
       }
     ]
-    "dev-nsg-mysql" = [
+    "nsg-mysql" = [
       {
         direction   = "INGRESS"
         protocol    = "6"
@@ -549,7 +556,7 @@ variable "nsgs" {
         description      = "Allow nodes to communicate with OCI services"
       }
     ]
-    "dev-nsg-apigateway" = [
+    "nsg-apigateway" = [
       {
         direction   = "INGRESS"
         protocol    = "6"
