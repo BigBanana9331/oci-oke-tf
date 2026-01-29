@@ -48,9 +48,10 @@ jobs:
       
       - name: Terraform Plan
         id: plan
-        run: terraform plan -var-file="inputs/dev.tfvars"
+        run: terraform plan -var-file="$TF_VAR_ENVIRONMENT/dev.tfvars"
         continue-on-error: true
         env:
+          TF_VAR_environment: ${{ env.TF_VAR_ENVIRONMENT }}
           TF_VAR_compartment_ocid: ${{ secrets.TF_VAR_COMPARTMENT_OCID }}
           TF_VAR_tenancy_ocid: ${{ secrets.OCI_TENANCY_OCID }}
           TF_VAR_region: ${{ secrets.OCI_REGION }}
