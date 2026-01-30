@@ -61,14 +61,14 @@ jobs:
         run: terraform plan -var-file="inputs/${{ matrix.environment }}.tfvars" -out="tfplan-${{ matrix.environment }}"
 
       - name: Terraform Show
-        run: terraform show tfplan-${{ matrix.environment }}"
+        run: terraform show tfplan-${{ matrix.environment }}
 
       - name: Cache Terraform Plan
         uses: actions/cache/save@v4
         with:
           path: tfplan-${{ matrix.environment }}
           key: tfplan-${{ github.run_id }}-${{ matrix.environment }}
-          
+
   apply:
     runs-on: ubuntu-latest
     needs: plan
