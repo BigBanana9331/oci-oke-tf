@@ -1,0 +1,52 @@
+# =============================================================================
+# OCI Object Storage Backend Configuration (Template)
+# =============================================================================
+# Uncomment and configure for remote state management
+# Docs: https://developer.hashicorp.com/terraform/language/settings/backends/configuration
+
+# terraform {
+#   backend "s3" {
+#     # OCI Object Storage uses S3-compatible API
+#     bucket   = "terraform-state"
+#     key      = "oci-tf/terraform.tfstate"
+#     region   = "ap-singapore-1"
+#     
+#     # OCI S3 compatibility endpoint
+#     endpoint = "https://<namespace>.compat.objectstorage.<region>.oraclecloud.com"
+#     
+#     # Required for OCI
+#     skip_region_validation      = true
+#     skip_credentials_validation = true
+#     skip_metadata_api_check     = true
+#     force_path_style            = true
+#     
+#     # Enable encryption at rest
+#     encrypt = true
+#   }
+# }
+
+# =============================================================================
+# Alternative: HTTP Backend with OCI Object Storage Pre-Authenticated Request
+# =============================================================================
+# terraform {
+#   backend "http" {
+#     address        = "https://objectstorage.<region>.oraclecloud.com/p/<par-token>/n/<namespace>/b/<bucket>/o/terraform.tfstate"
+#     lock_address   = "https://objectstorage.<region>.oraclecloud.com/p/<par-token>/n/<namespace>/b/<bucket>/o/terraform.tfstate.lock"
+#     unlock_address = "https://objectstorage.<region>.oraclecloud.com/p/<par-token>/n/<namespace>/b/<bucket>/o/terraform.tfstate.lock"
+#     lock_method    = "PUT"
+#     unlock_method  = "DELETE"
+#   }
+# }
+
+# =============================================================================
+# Alternative: Terraform Cloud Backend
+# =============================================================================
+# terraform {
+#   cloud {
+#     organization = "your-org"
+#     
+#     workspaces {
+#       name = "oci-tf-dev"
+#     }
+#   }
+# }
