@@ -21,10 +21,10 @@ locals {
     ])
   ])
 
-  network_entity_ids = {
-    natgw = oci_core_nat_gateway.nat_gateway[0].id
-    svcgw = oci_core_service_gateway.service_gateway[0].id
-  }
+  network_entity_ids = merge(
+    length(oci_core_nat_gateway.nat_gateway) > 0 ? { natgw = oci_core_nat_gateway.nat_gateway[0].id } : {},
+    length(oci_core_service_gateway.service_gateway) > 0 ? { svcgw = oci_core_service_gateway.service_gateway[0].id } : {}
+  )
 
   seclists = {
     for sl_name, sl_res in oci_core_security_list.security_lists :
@@ -79,10 +79,10 @@ resource "oci_core_service_gateway" "service_gateway" {
 }
 
 resource "oci_core_nat_gateway" "nat_gateway" {
-  count          = var.service_gateway_name != null ? 1 : 0
+  count          = var.nat_gateway_name != null ? 1 : 0
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
-  display_name   = var.nat_gateway_name
+  display_name   = join("-", [var.environment, var.app_name, var.nat_gateway_name])
 
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags

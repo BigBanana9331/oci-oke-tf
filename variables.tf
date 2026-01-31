@@ -1,29 +1,72 @@
+# =============================================================================
+# Core OCI Configuration Variables
+# =============================================================================
+
 variable "compartment_ocid" {
-  type = string
+  type        = string
+  description = "The OCID of the compartment where resources will be created"
+
+  validation {
+    condition     = can(regex("^ocid1\\.compartment\\.", var.compartment_ocid))
+    error_message = "The compartment_ocid must be a valid OCI compartment OCID."
+  }
 }
 
 variable "tenancy_ocid" {
-  type = string
+  type        = string
+  description = "The OCID of the tenancy"
+
+  validation {
+    condition     = can(regex("^ocid1\\.tenancy\\.", var.tenancy_ocid))
+    error_message = "The tenancy_ocid must be a valid OCI tenancy OCID."
+  }
 }
 
 variable "region" {
-  type = string
+  type        = string
+  description = "The OCI region where resources will be provisioned (e.g., ap-singapore-1, us-ashburn-1)"
+
+  validation {
+    condition = can(regex("^[a-z]{2,4}-[a-z]+-[0-9]+$", var.region))
+    error_message = "The region must be a valid OCI region identifier (e.g., ap-singapore-1)."
+  }
 }
 
 variable "environment" {
-  type = string
+  type        = string
+  description = "The deployment environment (dev, staging, prod)"
+
+  validation {
+    condition     = contains(["dev", "staging", "prod"], var.environment)
+    error_message = "Environment must be one of: dev, staging, prod."
+  }
 }
 
 variable "app_name" {
-  type = string
+  type        = string
+  description = "The application name used for resource naming conventions"
+
+  validation {
+    condition     = can(regex("^[a-z][a-z0-9-]{1,20}$", var.app_name))
+    error_message = "The app_name must start with a letter, contain only lowercase letters, numbers, and hyphens, and be 2-21 characters long."
+  }
 }
 
 variable "tags" {
-  type    = object({ freeformTags = map(string), definedTags = map(string) })
-  default = { "definedTags" = {}, "freeformTags" = { "CreatedBy" = "Terraform" } }
+  type        = object({ freeformTags = map(string), definedTags = map(string) })
+  description = "Resource tags for cost tracking and organization"
+  default = {
+    definedTags  = {}
+    freeformTags = { "CreatedBy" = "Terraform" }
+  }
 }
 
+# =============================================================================
+# VCN Configuration
+# =============================================================================
+
 variable "vcns" {
+  description = "Map of VCN configurations including CIDR blocks, route tables, subnets, and NSGs"
   type = map(object({
     cidr_blocks = list(string)
     route_tables = map(set(object({
@@ -81,9 +124,14 @@ variable "vcns" {
   }))
 }
 
+# =============================================================================
+# API Gateway Configuration
+# =============================================================================
+
 variable "api_gateway" {
-  nullable = true
-  default  = null
+  description = "API Gateway configuration for exposing services"
+  nullable    = true
+  default     = null
   type = object({
     compartment_id = string
     vcn_name       = string
@@ -96,9 +144,14 @@ variable "api_gateway" {
   })
 }
 
+# =============================================================================
+# Bastion Configuration
+# =============================================================================
+
 variable "bastion" {
-  nullable = true
-  default  = null
+  description = "Bastion host configuration for secure access to private resources"
+  nullable    = true
+  default     = null
   type = object({
     compartment_id               = string
     vcn_name                     = string
@@ -112,9 +165,14 @@ variable "bastion" {
   })
 }
 
+# =============================================================================
+# File Storage Configuration
+# =============================================================================
+
 variable "file_system" {
-  nullable = true
-  default  = null
+  description = "OCI File Storage configuration for shared file systems"
+  nullable    = true
+  default     = null
   type = object({
     tenancy_ocid     = string
     compartment_id   = string
@@ -125,9 +183,14 @@ variable "file_system" {
   })
 }
 
+# =============================================================================
+# Logging Configuration
+# =============================================================================
+
 variable "log_group" {
-  nullable = true
-  default  = null
+  description = "OCI Logging service configuration for centralized log management"
+  nullable    = true
+  default     = null
   type = object({
     compartment_id        = string
     log_group_name        = string
