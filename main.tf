@@ -1,13 +1,11 @@
-module "vcn" {
-  for_each       = var.vcns
-  source         = "./modules/networking"
-  app_name       = var.app_name
-  environment    = var.environment
-  compartment_id = var.compartment_ocid
-  tags           = var.tags
-  vcn_name       = each.key
-  cidr_blocks    = each.value.cidr_blocks
-  route_tables   = each.value.route_tables
-  subnets        = each.value.subnets
-  nsgs           = each.value.nsgs
+module "bastion" {
+  source                     = "./modules/bastion"
+  compartment_id             = var.compartment_ocid
+  environment                = var.environment
+  app_name                   = var.app_name
+  tags                       = var.tags
+  vcn_name                   = var.bastion.vcn_name
+  subnet_name                = var.bastion.subnet_name
+  bastion_name               = var.bastion.bastion_name
+  max_session_ttl_in_seconds = var.bastion.max_session_ttl_in_seconds
 }

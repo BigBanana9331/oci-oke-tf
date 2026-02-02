@@ -22,7 +22,6 @@ resource "oci_apigateway_gateway" "gateway" {
   compartment_id             = var.compartment_id
   display_name               = var.gateway_name
   endpoint_type              = var.endpoint_type
-  ip_mode                    = var.ip_mode
   subnet_id                  = data.oci_core_subnets.subnets.subnets[0].id
   network_security_group_ids = [for nsg in data.oci_core_network_security_groups.network_security_groups.network_security_groups : nsg.id]
 
