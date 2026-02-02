@@ -117,7 +117,7 @@ jobs:
           fail-on-cache-miss: true
 
       - name: Terraform Apply
-        run: terraform apply tfplan-$TF_VAR_environment
+        run: terraform apply "tfplan-$TF_VAR_environment"
 
   uat-plan:
     runs-on: ubuntu-latest
@@ -227,4 +227,4 @@ jobs:
           fail-on-cache-miss: true
 
       - name: Terraform Apply
-        run: terraform apply tfplan-$TF_VAR_environment -input=false
+        run: terraform apply "tfplan-$TF_VAR_environment" -input=false
