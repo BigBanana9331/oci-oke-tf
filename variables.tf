@@ -12,7 +12,7 @@ variable "environment" {
 
 variable "app_name" {
   type    = string
-  default = ""
+  default = "helloapp"
 }
 
 variable "bastion" {
