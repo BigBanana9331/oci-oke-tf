@@ -23,7 +23,8 @@ oke = {
   }
 
   instance_dynamic_group = {
-    name = "nodes-dg"
+    name        = "nodes-dg"
+    description = "Nodepool dyanmic group"
   }
 
   policy = {
