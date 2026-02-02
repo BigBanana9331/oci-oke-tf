@@ -8,7 +8,7 @@ data "oci_core_subnets" "subnets" {
   compartment_id = var.compartment_id
   vcn_id         = data.oci_core_vcns.vcns.virtual_networks[0].id
   # display_name   = join("-", [var.environment, var.app_name, var.subnet_name])
-  display_name   = join("-", [var.environment, var.vcn_name])
+  display_name   = join("-", [var.environment, var.subnet_name])
 }
 
 resource "oci_bastion_bastion" "bastion" {
