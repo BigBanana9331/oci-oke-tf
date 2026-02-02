@@ -6,10 +6,10 @@ data "oci_identity_compartment" "compartment" {
   id = var.compartment_id
 }
 
-data "oci_logging_log_groups" "log_groups" {
-  compartment_id = var.compartment_id
-  display_name   = join("-", [var.environment, var.app_name, var.log_group_name])
-}
+# data "oci_logging_log_groups" "log_groups" {
+#   compartment_id = var.compartment_id
+#   display_name   = join("-", [var.environment, var.app_name, var.log_group_name])
+# }
 
 data "oci_core_vcns" "vcns" {
   compartment_id = var.compartment_id
@@ -101,9 +101,22 @@ resource "oci_containerengine_cluster" "cluster" {
   }
 }
 
+resource "oci_logging_log_group" "log_group" {
+  compartment_id = var.compartment_id
+  display_name   = join("-", [var.environment, var.app_name, var.log_group_name])
+  description    = var.log_group_description
+
+  defined_tags  = var.tags.definedTags
+  freeform_tags = var.tags.freeformTags
+
+  lifecycle {
+    ignore_changes = [defined_tags, freeform_tags]
+  }
+}
+
 resource "oci_logging_log" "logs" {
   for_each           = var.logs
-  log_group_id       = data.oci_logging_log_groups.log_groups.log_groups[0].id
+  log_group_id       = oci_logging_log_groups.log_group.id
   display_name       = join("-", [var.environment, var.app_name, each.key])
   log_type           = each.value.type
   is_enabled         = each.value.is_enabled
@@ -130,7 +143,7 @@ resource "oci_logging_log" "logs" {
     ignore_changes = [defined_tags, freeform_tags]
   }
 
-  depends_on = [oci_containerengine_cluster.cluster]
+  depends_on = [oci_containerengine_cluster.cluster, oci_logging_log_group.log_group]
 }
 
 resource "oci_identity_dynamic_group" "dynamic_group" {

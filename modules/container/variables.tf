@@ -34,6 +34,12 @@ variable "log_group_name" {
   default = "loggroup-0"
 }
 
+variable "log_group_description" {
+  type     = string
+  nullable = true
+  default  = null
+}
+
 variable "instance_dynamic_group" {
   type = object({
     description = optional(string)
