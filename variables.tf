@@ -50,7 +50,8 @@ variable "oke" {
     })
 
     instance_dynamic_group = object({
-      name = string
+      name        = string
+      description = string
     })
 
     policy = object({
