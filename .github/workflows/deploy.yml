@@ -51,18 +51,18 @@ jobs:
             terraform-${{ runner.os }}-
 
       - name: Terraform Init
-        run: terraform init -input=false -backend-config="bucket=$BACKEND_CONFIG_BUCKET" -backend-config="namespace=$BACKEND_CONFIG_NAMESPACE" -backend-config="key=statefile/$TF_VAR_region/helloapp/$TF_VAR_environment.tfstate"
+        run: terraform init -input=false -backend-config="bucket=$BACKEND_CONFIG_BUCKET" -backend-config="namespace=$BACKEND_CONFIG_NAMESPACE" -backend-config="key=statefile/$TF_VAR_region/helloapp/dev.tfstate"
         
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan -input=false -var-file="inputs/$TF_VAR_environment.tfvars" -out="tfplan-$TF_VAR_environment"
+        run: terraform plan -input=false -var-file="inputs/dev.tfvars" -out="tfplan-dev"
 
       - name: Cache Terraform Plan
         uses: actions/cache/save@v4
         with:
-          path: tfplan-$TF_VAR_environment
-          key: tfplan-${{ github.run_id }}-$TF_VAR_environment
+          path: tfplan-dev
+          key: tfplan-${{ github.run_id }}-dev
 
   dev-apply:
     runs-on: ubuntu-latest
@@ -107,17 +107,17 @@ jobs:
             terraform-${{ runner.os }}-
       
       - name: Terraform Init
-        run: terraform init -input=false -backend-config="bucket=$BACKEND_CONFIG_BUCKET" -backend-config="namespace=$BACKEND_CONFIG_NAMESPACE"  -backend-config="key=statefile/$TF_VAR_region/helloapp/$TF_VAR_environment.tfstate"
+        run: terraform init -input=false -backend-config="bucket=$BACKEND_CONFIG_BUCKET" -backend-config="namespace=$BACKEND_CONFIG_NAMESPACE"  -backend-config="key=statefile/$TF_VAR_region/helloapp/dev.tfstate"
 
       - name: Restore Plan Cache
         uses: actions/cache/restore@v4
         with:
-          path: tfplan-$TF_VAR_environment
-          key: tfplan-${{ github.run_id }}-$TF_VAR_environment
+          path: tfplan-dev
+          key: tfplan-${{ github.run_id }}-dev
           fail-on-cache-miss: true
 
       - name: Terraform Apply
-        run: terraform apply "tfplan-$TF_VAR_environment"
+        run: terraform apply "tfplan-dev"
 
   uat-plan:
     runs-on: ubuntu-latest
@@ -161,18 +161,18 @@ jobs:
             terraform-${{ runner.os }}-
 
       - name: Terraform Init
-        run: terraform init -input=false -backend-config="bucket=$BACKEND_CONFIG_BUCKET" -backend-config="namespace=$BACKEND_CONFIG_NAMESPACE" -backend-config="key=statefile/$TF_VAR_region/helloapp/$TF_VAR_environment.tfstate"
+        run: terraform init -input=false -backend-config="bucket=$BACKEND_CONFIG_BUCKET" -backend-config="namespace=$BACKEND_CONFIG_NAMESPACE" -backend-config="key=statefile/$TF_VAR_region/helloapp/uat.tfstate"
         
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan -input=false -var-file="inputs/$TF_VAR_environment.tfvars" -out="tfplan-$TF_VAR_environment"
+        run: terraform plan -input=false -var-file="inputs/uat.tfvars" -out="tfplan-uat"
 
       - name: Cache Terraform Plan
         uses: actions/cache/save@v4
         with:
-          path: tfplan-$TF_VAR_environment
-          key: tfplan-${{ github.run_id }}-$TF_VAR_environment
+          path: tfplan-uat
+          key: tfplan-${{ github.run_id }}-uat
 
   uat-apply:
     runs-on: ubuntu-latest
@@ -217,14 +217,14 @@ jobs:
             terraform-${{ runner.os }}-
       
       - name: Terraform Init
-        run: terraform init -input=false -backend-config="bucket=$BACKEND_CONFIG_BUCKET" -backend-config="namespace=$BACKEND_CONFIG_NAMESPACE"  -backend-config="key=statefile/$TF_VAR_region/helloapp/$TF_VAR_environment.tfstate"
+        run: terraform init -input=false -backend-config="bucket=$BACKEND_CONFIG_BUCKET" -backend-config="namespace=$BACKEND_CONFIG_NAMESPACE"  -backend-config="key=statefile/$TF_VAR_region/helloapp/uat.tfstate"
 
       - name: Restore Plan Cache
         uses: actions/cache/restore@v4
         with:
-          path: tfplan-$TF_VAR_environment
-          key: tfplan-${{ github.run_id }}-$TF_VAR_environment
+          path: tfplan-uat
+          key: tfplan-${{ github.run_id }}-uat
           fail-on-cache-miss: true
 
       - name: Terraform Apply
-        run: terraform apply "tfplan-$TF_VAR_environment" -input=false
+        run: terraform apply "tfplan-uat" -input=false
