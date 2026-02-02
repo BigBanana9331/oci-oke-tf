@@ -1,6 +1,6 @@
 bastion = {
-  vcn_name                   = "dev-vcn"
-  subnet_name                = "dev-subnet-bastion"
-  bastion_name               = "dev-bastion"
+  vcn_name                   = "vcn-0"
+  subnet_name                = "subnet-bastion"
+  bastion_name               = "bastion-0"
   max_session_ttl_in_seconds = 3600
 }
