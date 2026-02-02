@@ -51,12 +51,12 @@ jobs:
             terraform-${{ runner.os }}-
 
       - name: Terraform Init
-        run: terraform init -backend-config="bucket=$BACKEND_CONFIG_BUCKET" -backend-config="namespace=$BACKEND_CONFIG_NAMESPACE" -backend-config="key=statefile/$TF_VAR_region/$TF_VAR_app_name/$TF_VAR_environment.tfstate"
+        run: terraform init -input=false -backend-config="bucket=$BACKEND_CONFIG_BUCKET" -backend-config="namespace=$BACKEND_CONFIG_NAMESPACE" -backend-config="key=statefile/$TF_VAR_region/$TF_VAR_app_name/$TF_VAR_environment.tfstate"
         
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan -var-file="inputs/$TF_VAR_environment.tfvars" -out="tfplan-$TF_VAR_environment"
+        run: terraform plan -input=false -var-file="inputs/$TF_VAR_environment.tfvars" -out="tfplan-$TF_VAR_environment"
 
       - name: Cache Terraform Plan
         uses: actions/cache/save@v4
@@ -107,7 +107,7 @@ jobs:
             terraform-${{ runner.os }}-
       
       - name: Terraform Init
-        run: terraform init -backend-config="bucket=$BACKEND_CONFIG_BUCKET" -backend-config="namespace=$BACKEND_CONFIG_NAMESPACE"  -backend-config="key=statefile/$TF_VAR_region/$TF_VAR_app_name/$TF_VAR_environment.tfstate"
+        run: terraform init -input=false -backend-config="bucket=$BACKEND_CONFIG_BUCKET" -backend-config="namespace=$BACKEND_CONFIG_NAMESPACE"  -backend-config="key=statefile/$TF_VAR_region/$TF_VAR_app_name/$TF_VAR_environment.tfstate"
 
       - name: Restore Plan Cache
         uses: actions/cache/restore@v4
@@ -161,12 +161,12 @@ jobs:
             terraform-${{ runner.os }}-
 
       - name: Terraform Init
-        run: terraform init -backend-config="bucket=$BACKEND_CONFIG_BUCKET" -backend-config="namespace=$BACKEND_CONFIG_NAMESPACE" -backend-config="key=statefile/$TF_VAR_region/$TF_VAR_app_name/$TF_VAR_environment.tfstate"
+        run: terraform init -input=false -backend-config="bucket=$BACKEND_CONFIG_BUCKET" -backend-config="namespace=$BACKEND_CONFIG_NAMESPACE" -backend-config="key=statefile/$TF_VAR_region/$TF_VAR_app_name/$TF_VAR_environment.tfstate"
         
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan -var-file="inputs/$TF_VAR_environment.tfvars" -out="tfplan-$TF_VAR_environment"
+        run: terraform plan -input=false -var-file="inputs/$TF_VAR_environment.tfvars" -out="tfplan-$TF_VAR_environment"
 
       - name: Cache Terraform Plan
         uses: actions/cache/save@v4
@@ -217,7 +217,7 @@ jobs:
             terraform-${{ runner.os }}-
       
       - name: Terraform Init
-        run: terraform init -backend-config="bucket=$BACKEND_CONFIG_BUCKET" -backend-config="namespace=$BACKEND_CONFIG_NAMESPACE"  -backend-config="key=statefile/$TF_VAR_region/$TF_VAR_app_name/$TF_VAR_environment.tfstate"
+        run: terraform init -input=false -backend-config="bucket=$BACKEND_CONFIG_BUCKET" -backend-config="namespace=$BACKEND_CONFIG_NAMESPACE"  -backend-config="key=statefile/$TF_VAR_region/$TF_VAR_app_name/$TF_VAR_environment.tfstate"
 
       - name: Restore Plan Cache
         uses: actions/cache/restore@v4
@@ -227,4 +227,4 @@ jobs:
           fail-on-cache-miss: true
 
       - name: Terraform Apply
-        run: terraform apply tfplan-$TF_VAR_environment
+        run: terraform apply tfplan-$TF_VAR_environment -input=false
