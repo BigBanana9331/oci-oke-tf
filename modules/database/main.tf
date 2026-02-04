@@ -8,7 +8,7 @@ data "oci_identity_compartment" "compartment" {
 
 data "oci_core_vcns" "vcns" {
   compartment_id = var.compartment_id
-  display_name   = join("-", [var.environment,var.vcn_name])
+  display_name   = join("-", [var.environment, var.vcn_name])
 }
 
 data "oci_core_subnets" "subnets" {
@@ -97,13 +97,13 @@ resource "oci_mysql_mysql_db_system" "mysql_db_system" {
   ip_address          = var.ip_address
   hostname_label      = join("-", [var.environment, var.hostname_label])
 
-  dynamic "encrypt_data" {
-    for_each = var.key_generation_type != null ? [1] : []
-    content {
-      key_generation_type = var.key_generation_type
-      key_id              = [for key in data.oci_kms_keys.keys.keys : key.id if key.display_name == var.key_name][0]
-    }
-  }
+  # dynamic "encrypt_data" {
+  #   for_each = var.key_generation_type != null ? [1] : []
+  #   content {
+  #     key_generation_type = var.key_generation_type
+  #     key_id              = [for key in data.oci_kms_keys.keys.keys : key.id if key.display_name == var.key_name][0]
+  #   }
+  # }
 
   dynamic "secure_connections" {
     for_each = var.certificate_generation_type != null ? [1] : []
