@@ -1,15 +1,11 @@
 terraform {
-  required_version = ">= 1.5.7"
+  required_version = "~> 1.14"
   required_providers {
     oci = {
       source  = "oracle/oci"
-      version = "~> 7.30"
+      version = "~> 8.0"
     }
   }
-}
-
-variable "tenancy_ocid" {
-  type = string
 }
 
 variable "compartment_id" {
@@ -248,8 +244,9 @@ variable "node_pools" {
     is_node_cycling_enabled              = optional(bool, false)
     maximum_surge                        = optional(number, 1)
     maximum_unavailable                  = optional(number, 1)
-    image_id                             = optional(string, "ocid1.image.oc1.ap-singapore-1.aaaaaaaa2a3rqme4763azdnhuj47wft43q5o236g7jbglkfhogprk44o2bta")
+    image_id                             = optional(string)
     source_type                          = optional(string, "IMAGE")
+    availability_domain                  = optional(string)
   }))
 
   default = {

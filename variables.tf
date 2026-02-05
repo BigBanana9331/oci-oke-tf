@@ -19,14 +19,48 @@ variable "app_name" {
   default = "helloapp"
 }
 
+variable "node_pool_option_id" {
+  type    = string
+  default = "all"
+}
+
+variable "node_pool_os_type" {
+  type    = string
+  default = "OL8"
+}
+
+variable "node_pool_os_arch" {
+  type    = string
+  default = "X86_64"
+}
+
+variable "node_pool_k8s_version" {
+  type    = string
+  default = "v1.34.1"
+}
+
+variable "vcn_name" {
+  type        = string
+  description = "application vcn"
+}
+
 variable "bastion" {
   nullable = true
   default  = null
   type = object({
-    vcn_name                   = string
     subnet_name                = string
     bastion_name               = string
     max_session_ttl_in_seconds = number
+  })
+}
+
+variable "apigw" {
+  nullable = true
+  default  = null
+  type = object({
+    subnet_name  = string
+    gateway_name = string
+    nsg_names    = list(string)
   })
 }
 
@@ -35,7 +69,6 @@ variable "oke" {
   nullable = true
   default  = null
   type = object({
-    vcn_name                 = string
     cluster_name             = string
     cluster_type             = string
     kubernetes_version       = string
@@ -114,10 +147,9 @@ variable "oke" {
 }
 
 variable "mysql" {
-	nullable = true
+  nullable = true
   default  = null
   type = object({
-    vcn_name                = string
     subnet_name             = string
     nsg_names               = set(string)
     shape_name              = string

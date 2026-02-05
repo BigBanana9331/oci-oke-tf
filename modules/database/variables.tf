@@ -1,9 +1,9 @@
 terraform {
-  required_version = ">= 1.5.7"
+  required_version = "~> 1.14"
   required_providers {
     oci = {
       source  = "oracle/oci"
-      version = "~> 7.30"
+      version = "~> 8.0"
     }
   }
 }
@@ -38,6 +38,10 @@ variable "subnet_name" {
 variable "nsg_names" {
   type    = set(string)
   default = []
+}
+
+variable "availability_domain" {
+  type = string
 }
 
 variable "shape_name" {

@@ -1,38 +1,5 @@
-data "oci_identity_availability_domains" "availability_domains" {
-  compartment_id = var.tenancy_ocid
-}
-
 data "oci_identity_compartment" "compartment" {
   id = var.compartment_id
-}
-
-data "oci_core_vcns" "vcns" {
-  compartment_id = var.compartment_id
-  display_name   = join("-", [var.environment, var.vcn_name])
-}
-
-data "oci_core_subnets" "subnets" {
-  compartment_id = var.compartment_id
-  vcn_id         = data.oci_core_vcns.vcns.virtual_networks[0].id
-}
-
-data "oci_core_network_security_groups" "network_security_groups" {
-  compartment_id = var.compartment_id
-  vcn_id         = data.oci_core_vcns.vcns.virtual_networks[0].id
-}
-
-data "oci_containerengine_node_pool_option" "node_pool_option" {
-  node_pool_option_id = var.node_pool_option_id
-  # node_pool_k8s_version = var.kubernetes_version
-  # node_pool_os_arch     = var.node_pool_os_arch
-  # node_pool_os_type     = var.node_pool_os_type
-}
-
-locals {
-  image_id = [
-    for source in data.oci_containerengine_node_pool_option.node_pool_option.sources :
-    source.image_id if strcontains(source.source_name, "Gen2-GPU") == false
-  ][0]
 }
 
 resource "oci_containerengine_cluster" "cluster" {
@@ -120,7 +87,7 @@ resource "oci_logging_log" "logs" {
 }
 
 resource "oci_identity_dynamic_group" "dynamic_group" {
-  compartment_id = var.tenancy_ocid
+  compartment_id = var.compartment_id
   description    = var.instance_dynamic_group.description
   matching_rule  = "ANY {instance.compartment.id = '${var.compartment_id}'}"
   name           = join("-", [var.environment, var.instance_dynamic_group.name])
@@ -250,7 +217,7 @@ resource "oci_containerengine_node_pool" "node_pool" {
 
     placement_configs {
       subnet_id           = [for subnet in data.oci_core_subnets.subnets.subnets : subnet.id if subnet.display_name == join("-", [var.environment, var.worker_subnet_name])][0]
-      availability_domain = data.oci_identity_availability_domains.availability_domains.availability_domains[0].name
+      availability_domain = each.value.availability_domain
     }
 
     node_pool_pod_network_option_details {
@@ -262,7 +229,7 @@ resource "oci_containerengine_node_pool" "node_pool" {
   }
 
   node_source_details {
-    image_id    = local.image_id
+    image_id    = each.value.image_id
     source_type = each.value.source_type
   }
 

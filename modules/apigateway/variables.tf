@@ -1,9 +1,9 @@
 terraform {
-  required_version = ">= 1.5.7"
+  required_version = "~> 1.14"
   required_providers {
     oci = {
       source  = "oracle/oci"
-      version = "~> 7.30"
+      version = "~> 8.0"
     }
   }
 }
@@ -17,22 +17,14 @@ variable "environment" {
   type = string
 }
 
-variable "app_name" {
-  type = string
-}
-
 variable "compartment_id" {
   type = string
 }
 
-variable "vcn_name" {
-  type    = string
-  default = "vcn-0"
-}
 
-variable "subnet_name" {
-  type    = string
-  default = "subnet-bastion"
+variable "subnet_id" {
+  type        = string
+  description = "api gateway subnet ocid"
 }
 
 variable "gateway_name" {
@@ -58,7 +50,7 @@ variable "ip_mode" {
   }
 }
 
-variable "nsg_names" {
-  type    = set(string)
-  default = ["nsg-apigateway"]
+variable "nsg_ids" {
+  type        = set(string)
+  description = "list of nsg_ids attach to the api gateway"
 }
