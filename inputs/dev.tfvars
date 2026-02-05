@@ -1,8 +1,15 @@
+vcn_name = "vcn"
+
 bastion = {
-  vcn_name                   = "vcn"
   subnet_name                = "subnet-bastion"
   bastion_name               = "bastion-0"
   max_session_ttl_in_seconds = 3600
+}
+
+apigw = {
+  subnet_name  = "subnet-apigateway"
+  gateway_name = "api-gateway-0"
+  nsg_names    = []
 }
 
 # oke = {
@@ -75,11 +82,11 @@ bastion = {
 # }
 
 # mysql = {
-  #vcn_name                = "vcn"
-  #subnet_name             = "subnet-mysql"
-  #nsg_names               = []
-  #shape_name              = "MySQL.2"
-  #display_name            = "mysql"
-  #data_storage_size_in_gb = 50
-  #is_highly_available     = false
-#}
+#   vcn_name                = "vcn"
+#   subnet_name             = "subnet-mysql"
+#   nsg_names               = []
+#   shape_name              = "MySQL.2"
+#   display_name            = "mysql"
+#   data_storage_size_in_gb = 50
+#   is_highly_available     = false
+# }

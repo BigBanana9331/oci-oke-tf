@@ -3,48 +3,42 @@ terraform {
   required_providers {
     oci = {
       source  = "oracle/oci"
-      version = "~> 7.30"
+      version = "~> 8.0"
     }
   }
 }
 
 variable "environment" {
-  type = string
-}
-
-variable "app_name" {
-  type     = string
-  nullable = true
-  default  = null
+  type        = string
+  description = "environment where deploy the bastion"
 }
 
 variable "compartment_id" {
-  type = string
+  type        = string
+  description = "compartment ocid contains the bastion"
 }
 
 variable "tags" {
-  type    = object({ freeformTags = map(string), definedTags = map(string) })
-  default = { "definedTags" = {}, "freeformTags" = { "CreatedBy" = "Terraform" } }
+  type        = object({ freeformTags = map(string), definedTags = map(string) })
+  default     = { "definedTags" = {}, "freeformTags" = { "CreatedBy" = "Terraform" } }
+  description = "common tags"
 }
 
-variable "vcn_name" {
-  type    = string
-  default = "vcn"
-}
-
-variable "subnet_name" {
-  type    = string
-  default = "subnet-bastion"
+variable "subnet_id" {
+  type        = string
+  description = "bastion subnet ocid"
 }
 
 variable "bastion_name" {
-  type    = string
-  default = "bastion-0"
+  type        = string
+  default     = "bastion-0"
+  description = "name of the bastion display in console"
 }
 
 variable "bastion_type" {
-  type    = string
-  default = "STANDARD"
+  type        = string
+  default     = "STANDARD"
+  description = "the bastion type."
 }
 
 variable "dns_proxy_status" {
