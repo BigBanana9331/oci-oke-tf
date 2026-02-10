@@ -33,7 +33,7 @@ oke = {
       node_pool_size                      = 1
       cni_type                            = "FLANNEL_OVERLAY"
       node_nsg_names                      = ["nsg-oke-workernode"]
-      is_pv_encryption_in_transit_enabled = false
+      is_pv_encryption_in_transit_enabled = true
       # key_name                            = "encryption-key"
     }
   }
