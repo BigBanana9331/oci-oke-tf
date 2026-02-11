@@ -6,11 +6,11 @@ bastion = {
   max_session_ttl_in_seconds = 3600
 }
 
-apigw = {
-  subnet_name  = "subnet-apigateway"
-  gateway_name = "api-gateway-0"
-  nsg_names    = []
-}
+# apigw = {
+#   subnet_name  = "subnet-apigateway"
+#   gateway_name = "api-gateway-0"
+#   nsg_names    = []
+# }
 
 oke = {
   vcn_name                  = "vcn"
@@ -45,13 +45,13 @@ oke = {
   }
 }
 
-mysql = {
-  vcn_name                = "vcn"
-  subnet_name             = "subnet-mysql"
-  nsg_names               = ["nsg-mysql"]
-  shape_name              = "MySQL.2"
-  display_name            = "mysql-0"
-  data_storage_size_in_gb = 50
-  is_highly_available     = false
-  kms_key_name            = "encryption-key"
-}
+# mysql = {
+#   vcn_name                = "vcn"
+#   subnet_name             = "subnet-mysql"
+#   nsg_names               = ["nsg-mysql"]
+#   shape_name              = "MySQL.2"
+#   display_name            = "mysql-0"
+#   data_storage_size_in_gb = 50
+#   is_highly_available     = false
+#   kms_key_name            = "encryption-key"
+# }
