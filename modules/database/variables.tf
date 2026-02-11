@@ -8,10 +8,6 @@ terraform {
   }
 }
 
-variable "tenancy_ocid" {
-  type = string
-}
-
 variable "compartment_id" {
   type = string
 }
@@ -21,23 +17,8 @@ variable "tags" {
   default = { "definedTags" = {}, "freeformTags" = { "CreatedBy" = "Terraform" } }
 }
 
-variable "policies" {
-  type = map(string)
-  default = {
-    # "netpol"     = "Networking policy for OKE"
-    # "secpol"     = "Security policy for OKE"
-    # "computepol" = "Compute policy for OKE"
-    logpol = "Policy for instances node group logging"
-  }
-}
-
 variable "environment" {
   type = string
-}
-
-variable "vcn_name" {
-  type    = string
-  default = "vcn"
 }
 
 variable "subnet_id" {
@@ -118,16 +99,6 @@ variable "admin_password" {
   sensitive = true
 }
 
-# variable "vault_name" {
-#   type    = string
-#   default = "dev-vault"
-# }
-
-# variable "admin_password_secret_name" {
-#   type    = string
-#   default = "dev-mysql-admin-password"
-# }
-
 variable "key_generation_type" {
   type    = string
   default = "BYOK" # BYOK/SYSTEM
@@ -179,17 +150,6 @@ variable "data_storage" {
   default = {
     is_auto_expand_storage_enabled = false
     max_storage_size_in_gbs        = "100"
-  }
-}
-
-variable "policy" {
-  type = object({
-    name        = string
-    description = string
-  })
-  default = {
-    description = "policy created by terraform"
-    name        = "mysql-policy"
   }
 }
 

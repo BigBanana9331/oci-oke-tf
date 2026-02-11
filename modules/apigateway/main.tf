@@ -4,6 +4,7 @@ resource "oci_apigateway_gateway" "gateway" {
   endpoint_type              = var.endpoint_type
   subnet_id                  = var.subnet_id
   network_security_group_ids = var.nsg_ids
+  ip_mode                    = var.ip_mode
 
   defined_tags  = var.tags.definedTags
   freeform_tags = var.tags.freeformTags

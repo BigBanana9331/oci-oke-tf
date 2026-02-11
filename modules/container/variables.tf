@@ -16,12 +16,6 @@ variable "environment" {
   type = string
 }
 
-variable "app_name" {
-  type     = string
-  nullable = true
-  default  = null
-}
-
 variable "tags" {
   type    = object({ freeformTags = map(string), definedTags = map(string) })
   default = { "definedTags" = {}, "freeformTags" = { "CreatedBy" = "Terraform" } }
@@ -42,7 +36,7 @@ variable "kubernetes_version" {
 }
 
 variable "image_id" {
-
+  type = string
 }
 
 variable "vcn_id" {
@@ -128,28 +122,6 @@ variable "log_group" {
   }
 }
 
-variable "instance_dynamic_group" {
-  type = object({
-    description = optional(string)
-    name        = optional(string, "nodes-dg")
-  })
-  default = {
-    description = "Nodepool dyanmic group"
-    name        = "nodes-dg"
-  }
-}
-
-# variable "policy" {
-#   type = object({
-#     description = optional(string, "policy created by terraform")
-#     name        = optional(string, "oke-policy")
-#   })
-#   default = {
-#     description = "policy created by terraform"
-#     name        = "oke-policy"
-#   }
-# }
-
 variable "dynamic_group_ids" {
   type = list(string)
 }
@@ -204,13 +176,6 @@ variable "logs" {
     "customlog-oke" = {
       type = "CUSTOM"
     }
-  }
-}
-
-variable "policies" {
-  type = map(string)
-  default = {
-    logpol = "Policy for instances node group logging"
   }
 }
 

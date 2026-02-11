@@ -4,17 +4,17 @@ data "oci_identity_availability_domain" "ad" {
 }
 
 data "oci_core_vcns" "vcns" {
-  compartment_id = var.compartment_ocid
+  compartment_id = var.vcn_compartment_id
   display_name   = join("-", [var.environment, var.vcn_name])
 }
 
 data "oci_core_subnets" "subnets" {
-  compartment_id = var.compartment_ocid
+  compartment_id = var.vcn_compartment_id
   vcn_id         = data.oci_core_vcns.vcns.virtual_networks[0].id
 }
 
 data "oci_core_network_security_groups" "network_security_groups" {
-  compartment_id = var.compartment_ocid
+  compartment_id = var.vcn_compartment_id
   vcn_id         = data.oci_core_vcns.vcns.virtual_networks[0].id
 }
 
