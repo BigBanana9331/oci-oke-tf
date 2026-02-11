@@ -16,7 +16,7 @@ module "apigw" {
   environment    = var.environment
   tags           = local.tags
   subnet_id      = local.subnets[join("-", [var.environment, var.apigw.subnet_name])]
-  nsg_ids        = [for nsg in var.apigw.nsg_names : lookup(local.nsgs, join("-", [var.environment, nsg]))]
+  nsg_ids        = [for nsg in var.apigw.nsg_names : local.nsgs[join("-", [var.environment, nsg])]]
 }
 
 module "oke" {
@@ -31,10 +31,10 @@ module "oke" {
   image_id                = local.image_id
   vcn_id                  = data.oci_core_vcns.vcns.virtual_networks[0].id
   availability_domain     = data.oci_identity_availability_domain.ad.name
-  cluster_subnet_id       = lookup(local.subnets, join("-", [var.environment, var.oke.cluster_subnet_name]))
-  endpoint_nsg_ids        = [for nsg in var.oke.endpoint_nsg_names : lookup(local.nsgs, join("-", [var.environment, nsg]))]
-  loadbalancer_subnet_ids = [for subnet in var.oke.loadbalancer_subnet_names : lookup(local.subnets, join("-", [var.environment, subnet]))]
-  worker_subnet_id        = lookup(local.subnets, join("-", [var.environment, var.oke.worker_subnet_name]))
+  cluster_subnet_id       = local.subnets[join("-", [var.environment, var.oke.cluster_subnet_name])]
+  endpoint_nsg_ids        = [for nsg in var.oke.endpoint_nsg_names : local.nsgs[join("-", [var.environment, nsg])]]
+  loadbalancer_subnet_ids = [for subnet in var.oke.loadbalancer_subnet_names : local.subnets[join("-", [var.environment, subnet])]]
+  worker_subnet_id        = local.subnets[join("-", [var.environment, var.oke.worker_subnet_name])]
   cni_type                = var.oke.cni_type
   services_cidr           = var.oke.services_cidr
   pods_cidr               = var.oke.pods_cidr
@@ -47,12 +47,11 @@ module "oke" {
 module "mysql" {
   count                   = var.mysql != null ? 1 : 0
   source                  = "./modules/database"
-  tenancy_ocid            = var.tenancy_ocid
   compartment_id          = var.compartment_ocid
   environment             = var.environment
   tags                    = local.tags
   subnet_id               = local.subnets[join("-", [var.environment, var.mysql.subnet_name])]
-  nsg_ids                 = [for nsg in var.mysql.nsg_names : lookup(local.nsgs, join("-", [var.environment, nsg]))]
+  nsg_ids                 = [for nsg in var.mysql.nsg_names : local.nsgs[join("-", [var.environment, nsg])]]
   availability_domain     = data.oci_identity_availability_domain.ad.name
   shape_name              = var.mysql.shape_name
   display_name            = var.mysql.display_name

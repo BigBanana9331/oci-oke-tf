@@ -62,11 +62,6 @@ variable "node_pool_os_arch" {
   default = "X86_64"
 }
 
-variable "node_pool_k8s_version" {
-  type    = string
-  default = "v1.34.1"
-}
-
 variable "vcn_name" {
   type        = string
   description = "application vcn"
